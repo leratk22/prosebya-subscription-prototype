@@ -192,10 +192,10 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
     <button class="drawer-close" data-act="drawer" aria-label="Закрыть панель сценариев"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2>Состояния прототипа</h2>
     <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Дата обновления лимитов стоит в карточках с лимитом. Телефон кликабелен: карточки, ⓘ, шторки. В подписке лимит либо на компанию, либо на клиента, но не оба сразу.</p>
-        <h3>Готовые сценарии</h3>
-    <div class="presets" id="presets"></div>
     <h3>Настроить вручную</h3>
     <div id="controls"></div>
+        <h3>Готовые сценарии</h3>
+    <div class="presets" id="presets"></div>
     <button class="copy" id="copy" type="button">Скопировать ссылку на это состояние</button>
   </aside>
 </div>
@@ -301,17 +301,16 @@ function program(){
 function footer(r){
   const right=r.disc?`скидка ${r.disc}%`:'без скидки';
   const own=r.lim&&(r.lim.t==='p'?'Личный лимит':'Общий лимит компании');
-  const owner=r.lim&&(!r.blocked?own+' · обновится 1 ноября':own);
   if(!r.lim) return `<div class="foot"><div class="foot-row"><b>${r.disc?`Скидка ${r.disc}% по подписке`:'Полная стоимость'}</b>${S.money?`<b class="foot-price">${fmt(r.paid)}</b>`:''}</div></div>`;
-  if(r.blocked) return S.money?`<div class="foot${r.disc?' tight':''}"><div class="foot-row"><b>Бесплатный доступ ограничен</b><b class="foot-price">${fmt(r.paid)}</b></div>${r.disc?`<div class="owner">Скидка ${r.disc}% по подписке</div>`:''}</div>`:`<div class="foot"><div class="foot-row"><b>Бесплатный доступ ограничен</b><span>${right}</span></div></div>`;
+  if(r.blocked) return S.money?`<div class="foot${r.disc?' tight':''}"><div class="foot-row"><b>Бесплатный доступ ограничен</b><b class="foot-price">${fmt(r.paid)}</b></div></div>`:`<div class="foot"><div class="foot-row"><b>Бесплатный доступ ограничен</b><span>${right}</span></div></div>`;
   const hidden=r.lim.t==='c'&&S.hide;
   if(r.left===0){
-    return `<div class="foot${hidden?' tight':''}"><div class="foot-row"><b>Лимит исчерпан</b><span>${right}</span></div>${hidden?'':'<div class="bar"></div>'}<div class="owner">${owner}</div></div>`;
+    return `<div class="foot${hidden?' tight':''}"><div class="foot-row"><b>Лимит исчерпан</b><span>${right}</span></div>${hidden?'':'<div class="bar"></div>'}</div>`;
   }
   const then=S.money?'<b class="foot-free">Бесплатно</b>':`<span>затем ${fmt(r.paid)}</span>`;
-  if(hidden) return `<div class="foot tight"><div class="foot-row"><b>${S.money?'В пределах лимита':'Бесплатно по лимиту'}</b>${then}</div><div class="owner">${owner}</div></div>`;
+  if(hidden) return `<div class="foot tight"><div class="foot-row"><b>${S.money?'В пределах лимита':'Бесплатно по лимиту'}</b>${then}</div></div>`;
   const pct=Math.max(2,Math.round(r.left/r.lim.total*100));
-  return `<div class="foot"><div class="foot-row"><b>${r.left} из ${r.lim.total}</b>${then}</div><div class="bar" role="img" aria-label="Осталось ${r.left} из ${r.lim.total}"><i style="width:${pct}%"></i></div><div class="owner">${owner}</div></div>`;
+  return `<div class="foot"><div class="foot-row"><b>${r.left} из ${r.lim.total}</b>${then}</div><div class="bar" role="img" aria-label="Осталось ${r.left} из ${r.lim.total}, ${own.toLowerCase()}"><i style="width:${pct}%"></i></div></div>`;
 }
 function card(r){
   const s=r.spec;
