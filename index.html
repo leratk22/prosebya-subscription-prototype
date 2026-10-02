@@ -5,15 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#E9ECF2">
 <title>Просебя — Моя подписка · прототип</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/EuclidCircularA-Regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/EuclidCircularA-SemiBold.woff" as="font" type="font/woff" crossorigin>
 <style>
+/* Euclid Circular A подключён файлами, а не по имени установленного шрифта: так он одинаково работает в Safari, Chrome и на телефоне */
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/EuclidCircularA-Regular.woff) format('woff')}
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/EuclidCircularA-Medium.woff) format('woff')}
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/EuclidCircularA-SemiBold.woff) format('woff')}
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/EuclidCircularA-Bold.woff) format('woff')}
 :root{
   --ink:#22263B; --muted:#626A7E; --surface:#F4F6FA; --soft:#EAEFF8; --line:#E3E6ED;
   --accent:#344079; --accent-ov:rgba(52,64,121,.1); --action:#FFB800; --action-hover:#F6A300;
   --negative:#F15D56; --negative-ov:rgba(241,93,86,.1); --track:#E7E9ED; --overlay:rgba(34,38,59,.8);
-  --font:'Euclid Circular A','Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font:'Euclid Circular A',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
