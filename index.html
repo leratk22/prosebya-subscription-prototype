@@ -185,7 +185,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
   <aside class="panel" id="panel" aria-label="Состояния прототипа">
     <button class="drawer-close" data-act="drawer" aria-label="Закрыть панель сценариев"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2>Состояния прототипа</h2>
-    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Телефон кликабелен: карточки, ⓘ, шторки. В подписке лимит либо на компанию, либо на клиента, но не оба сразу.</p>
+    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Дата обновления лимитов стоит в карточках с лимитом. Телефон кликабелен: карточки, ⓘ, шторки. В подписке лимит либо на компанию, либо на клиента, но не оба сразу.</p>
     <h3>Замечания продакта</h3>
     <div id="product"></div>
     <h3>Готовые сценарии</h3>
@@ -228,8 +228,8 @@ const CONFIGS={
  personal:{label:'Только личный лимит',items:{psy:{limit:{t:'p',left:2,total:3},disc:0},coach:{limit:{t:'p',left:1,total:2},disc:0},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
  discounts:{label:'Только скидки',items:{psy:{disc:10},coach:{disc:25},ther:{disc:20},law:{disc:10},fin:{disc:20},nut:{disc:0}}}
 };
-const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0,money:0,renew:'head'};
-const MODE=['money','renew'];
+const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0,money:0};
+const MODE=['money'];
 const PRESETS=[
  {id:'s04',t:'Лимит компании + скидки',h:'Лимиты на компанию, у части специальностей скидки',s:{}},
  {id:'s04p',t:'Личный лимит + скидки',h:'Лимиты на клиента, у части специальностей скидки',s:{config:'compositeP'}},
@@ -286,25 +286,18 @@ function appbar(title,back){
 function program(){
   const lim=hasLimits(S.config);
   const blocked=lim&&S.block!=='none';
-  const renew=lim&&S.block!=='perm'&&S.renew==='head';
-  let h=`<div class="program${(!blocked&&!renew)?' compact':''}"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#344079')}</button></div>`;
+  let h=`<div class="program${!blocked?' compact':''}"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#344079')}</button></div>`;
   if(blocked){
     const temp=S.block==='temp';
     h+=`<div class="pad-h"><div class="hr"></div></div><div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>${temp?'Скидки и платная запись доступны':'Скидки и платная запись сохраняются'}</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
-    if(renew) h+='<div class="renew" style="padding-top:12px">'+renewInner()+'</div>';
-    else h+='<div style="height:12px"></div>';
-  }else if(lim&&renew){
-    h+='<div class="pad-h"><div class="hr"></div></div><div class="renew">'+renewInner()+'</div>';
+    h+='<div style="height:12px"></div>';
   }
   return h+'</div>';
-}
-function renewInner(){
-  return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#344079" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><div><b>Лимиты обновятся 1 ноября</b><span>Сразу по всем специальностям</span></div>`;
 }
 function footer(r){
   const right=r.disc?`скидка ${r.disc}%`:'без скидки';
   const own=r.lim&&(r.lim.t==='p'?'Личный лимит':'Общий лимит компании');
-  const owner=r.lim&&(S.renew==='cards'&&!r.blocked?own+' · обновится 1 ноября':own);
+  const owner=r.lim&&(!r.blocked?own+' · обновится 1 ноября':own);
   if(!r.lim) return `<div class="foot"><div class="foot-row"><b>${r.disc?`Скидка ${r.disc}% по подписке`:'Полная стоимость'}</b></div></div>`;
   if(r.blocked) return `<div class="foot"><div class="foot-row"><b>Бесплатный доступ ограничен</b><span>${right}</span></div></div>`;
   const hidden=r.lim.t==='c'&&S.hide;
@@ -385,9 +378,7 @@ function seg(key,opts,dis,hint){
 function renderPanel(){
   $('#product').innerHTML=
    seg('money',{title:'Цена и слово «Бесплатно»',list:[[0,'Как в макете'],[1,'Меньше про деньги']]})+
-   `<div class="hint" style="margin:-6px 0 12px">Бесплатные карточки без рублей: «Бесплатно» или небольшая цена под названием; цена после лимита — в «Условиях подписки».</div>`+
-   seg('renew',{title:'Дата обновления лимитов',list:[['head','В плашке программы'],['cards','В карточках']]})+
-   `<div class="hint" style="margin:-6px 0 0">Обновляются только лимиты, поэтому дата стоит у специальностей с лимитом.</div>`;
+   `<div class="hint" style="margin:-6px 0 12px">Бесплатные карточки без рублей: «Бесплатно» или небольшая цена под названием; цена после лимита — в «Условиях подписки».</div>`;
   $('#presets').innerHTML=PRESETS.map(p=>`<button type="button" class="preset" data-preset="${p.id}" aria-pressed="${same(p)}"><code>${p.id.toUpperCase()}</code><span>${p.t}<small>${p.h}</small></span></button>`).join('');
   const c=S.config,lim=hasLimits(c),corp=hasLimits(c,'c'),pers=hasLimits(c,'p');
   $('#controls').innerHTML=
@@ -419,7 +410,6 @@ function readHash(){
     const v=q.get(k);
     n[k]=(typeof DEFAULT[k]==='number')?Number(v)?1:0:v;
   }
-  if(!['head','cards'].includes(n.renew)) n.renew='head';
   if(!CONFIGS[n.config]) n.config='composite';
   if(!['none','temp','perm'].includes(n.block)) n.block='none';
   if(!['ok','loading','error'].includes(n.screen)) n.screen='ok';
@@ -443,7 +433,7 @@ function closeSheet(){
 /* ---------------- события ---------------- */
 document.addEventListener('click',e=>{
   const pr=e.target.closest('[data-preset]');
-  if(pr){const p=PRESETS.find(x=>x.id===pr.dataset.preset);S=Object.assign({},DEFAULT,{money:S.money,renew:S.renew},p.s);view={name:'main',spec:null};closeSheet();clearTimeout(loadTimer);document.body.classList.remove('drawer');render();return}
+  if(pr){const p=PRESETS.find(x=>x.id===pr.dataset.preset);S=Object.assign({},DEFAULT,{money:S.money},p.s);view={name:'main',spec:null};closeSheet();clearTimeout(loadTimer);document.body.classList.remove('drawer');render();return}
   const sg=e.target.closest('[data-k]');
   if(sg){const k=sg.dataset.k;S[k]=(typeof DEFAULT[k]==='number')?Number(sg.dataset.v):sg.dataset.v;if(k==='config'||k==='screen'){view={name:'main',spec:null};closeSheet()}clearTimeout(loadTimer);render();return}
   const sw=e.target.closest('[data-sw]');
