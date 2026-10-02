@@ -382,9 +382,7 @@ function seg(key,opts,dis,hint){
   return `<div class="ctl"><span class="lbl" id="l-${key}">${opts.title}</span><div class="seg${dis?' disabled':''}" role="radiogroup" aria-labelledby="l-${key}">${opts.list.map(o=>`<button type="button" role="radio" aria-checked="${String(S[key])===String(o[0])}" data-k="${key}" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>${dis&&hint?`<div class="hint">${hint}</div>`:''}</div>`;
 }
 function renderPanel(){
-  const both=S.money===1&&S.renew==='cards';
   $('#product').innerHTML=
-   `<button type="button" class="switch" role="switch" aria-checked="${both}" data-sw="both"><i></i><span><b>Все правки продакта</b><br>включить или вернуть как было</span></button>`+
    seg('money',{title:'Цена и слово «Бесплатно»',list:[[0,'Как в макете'],[1,'Меньше про деньги']]})+
    `<div class="hint" style="margin:-6px 0 12px">Бесплатные карточки без рублей: «Бесплатно» под названием, цена после лимита — в «Условиях подписки».</div>`+
    seg('renew',{title:'Дата обновления лимитов',list:[['head','В плашке программы'],['cards','В карточках']]})+
@@ -448,11 +446,7 @@ document.addEventListener('click',e=>{
   const sg=e.target.closest('[data-k]');
   if(sg){const k=sg.dataset.k;S[k]=(typeof DEFAULT[k]==='number')?Number(sg.dataset.v):sg.dataset.v;if(k==='config'||k==='screen'){view={name:'main',spec:null};closeSheet()}clearTimeout(loadTimer);render();return}
   const sw=e.target.closest('[data-sw]');
-  if(sw){
-    if(sw.dataset.sw==='both'){const on=S.money===1&&S.renew==='cards';S.money=on?0:1;S.renew=on?'head':'cards'}
-    else S[sw.dataset.sw]=S[sw.dataset.sw]?0:1;
-    render();return;
-  }
+  if(sw){S[sw.dataset.sw]=S[sw.dataset.sw]?0:1;render();return}
   if(e.target.closest('#copy')){
     const b=$('#copy');
     const done=()=>{b.classList.add('done');b.textContent='Ссылка скопирована';setTimeout(()=>{b.classList.remove('done');b.textContent='Скопировать ссылку на это состояние'},1800)};
