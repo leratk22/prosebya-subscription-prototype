@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E9ECF2">
+<title>Просебя — Моя подписка · прототип</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#22263B; --muted:#626A7E; --surface:#F4F6FA; --soft:#EAEFF8; --line:#E3E6ED;
+  --accent:#344079; --accent-ov:rgba(52,64,121,.1); --action:#FFB800; --action-hover:#F6A300;
+  --negative:#F15D56; --negative-ov:rgba(241,93,86,.1); --track:#E7E9ED; --overlay:rgba(34,38,59,.8);
+  --font:'Euclid Circular A','Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#E9ECF2;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- сцена: телефон + панель ---------- */
+.stage{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;padding:24px}
+.device{position:relative;flex:0 0 375px;width:375px;height:min(812px,calc(100vh - 48px));min-height:560px;background:#fff;border-radius:44px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 10px #1B1D2B,0 28px 70px rgba(20,24,50,.38)}
+.statusbar{flex:0 0 auto;height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 6px;font:600 15px/1 var(--font);background:#fff;position:relative;z-index:2}
+.statusbar svg{display:block}
+.viewport{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:none;background:#fff}
+.viewport::-webkit-scrollbar{display:none}
+.home{flex:0 0 auto;height:26px;display:flex;align-items:center;justify-content:center;background:#fff}
+.home i{width:134px;height:5px;border-radius:3px;background:#000}
+
+/* ---------- app bar ---------- */
+.appbar{position:sticky;top:0;z-index:1;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;height:56px;background:#fff;padding:0 4px}
+.appbar h1{margin:0;text-align:center;font-size:18px;line-height:24px;font-weight:600}
+.iconbtn{width:44px;height:44px;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;border-radius:22px;padding:0}
+.iconbtn:active{background:rgba(34,38,59,.05)}
+
+/* ---------- карточка программы ---------- */
+.section{padding:8px 16px 0}
+.program{background:var(--surface);border-radius:24px}
+.program-head{display:flex;align-items:flex-start;gap:8px;padding:12px 4px 8px 16px}
+.program-head>div{flex:1;padding-top:8px}
+.program-head b{display:block;font-size:18px;line-height:24px;font-weight:600}
+.program-head span{display:block;font-size:14px;line-height:20px;color:var(--muted)}
+.hr{height:1px;background:var(--line)}
+.pad-h{padding:0 16px}
+.block{display:flex;align-items:center;gap:12px;margin:12px 12px 0;padding:12px 4px 12px 16px;min-height:44px;background:var(--negative-ov);border-radius:16px}
+.block>div{flex:1}
+.block b{display:block;font-size:16px;line-height:22px;font-weight:600}
+.block span{display:block;font-size:14px;line-height:20px;color:var(--muted);margin-top:2px}
+.renew{display:flex;align-items:center;gap:12px;padding:12px 16px 16px}
+.renew b{display:block;font-size:16px;line-height:22px;font-weight:500}
+.renew span{display:block;font-size:14px;line-height:20px;color:var(--muted)}
+.program.compact .program-head{padding-bottom:12px}
+
+.heading{padding:24px 16px 12px}
+.heading h2{margin:0;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.02em}
+.heading p{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
+
+/* ---------- карточки специальностей ---------- */
+.cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 24px}
+.card{background:var(--surface);border-radius:24px;padding:8px 0 0;overflow:hidden}
+.card-main{display:block;width:100%;border:0;background:none;text-align:left;padding:0}
+.card-main:active{background:rgba(34,38,59,.04)}
+.card-top{display:flex;align-items:center;gap:8px;min-height:56px;padding:0 16px}
+.ico{flex:0 0 40px;width:40px;height:40px;border-radius:12px;background:var(--accent-ov);display:flex;align-items:center;justify-content:center;margin-right:4px}
+.card-name{flex:1;font-size:18px;line-height:24px;font-weight:600}
+.card-price{flex:0 0 auto;font-size:22px;line-height:28px;font-weight:700}
+.card-desc{padding:0 16px 12px;font-size:14px;line-height:20px;color:var(--muted)}
+.foot{border-top:1px solid var(--line);padding:12px 16px 14px}
+.foot-row{display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px}
+.foot-row b{flex:1;font-weight:600}
+.foot-row span{color:var(--muted);text-align:right}
+.bar{height:6px;border-radius:3px;background:var(--track);margin-top:8px}
+.bar i{display:block;height:100%;border-radius:3px;background:var(--accent);min-width:0}
+.owner{margin-top:8px;font-size:12px;line-height:16px;color:var(--muted)}
+.foot.tight .owner{margin-top:4px}
+
+/* ---------- шторки ---------- */
+.layer{position:absolute;inset:0;z-index:5;pointer-events:none;visibility:hidden;transition:visibility 0s .25s}
+.layer.open{pointer-events:auto;visibility:visible;transition:none}
+.scrim{position:absolute;inset:0;background:var(--overlay);opacity:0;transition:opacity .25s}
+.layer.open .scrim{opacity:1}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:88%;overflow:auto;background:#fff;border-radius:32px 32px 0 0;padding:8px 16px 34px;transform:translateY(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.layer.open .sheet{transform:none}
+.handle{width:36px;height:4px;border-radius:2px;background:rgba(34,38,59,.2);margin:4px auto 8px}
+.sheet-head{display:flex;align-items:center;gap:8px;min-height:56px}
+.sheet-head h3{flex:1;margin:0;font-size:20px;line-height:28px;font-weight:600}
+.terms{display:flex;flex-direction:column;gap:16px;padding:4px 0 24px}
+.terms small{display:block;font-size:14px;line-height:20px;color:var(--muted)}
+.terms p{margin:2px 0 0;font-size:16px;line-height:22px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border:0;border-radius:999px;background:var(--action);color:var(--ink);font-size:16px;font-weight:600}
+.btn:active{background:var(--action-hover)}
+.btn.tertiary{background:none;color:var(--accent);min-height:44px}
+
+/* ---------- каталог (заглушка), загрузка, ошибка ---------- */
+.stub{margin:16px;padding:24px;border:2px dashed #C3C8D6;border-radius:24px;text-align:center}
+.stub b{display:block;font-size:18px;line-height:24px;font-weight:600}
+.stub p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
+.price-recap{margin:16px 16px 0;padding:16px;background:var(--surface);border-radius:24px;display:flex;align-items:center;gap:12px}
+.price-recap div{flex:1;font-size:14px;line-height:20px;color:var(--muted)}
+.price-recap b{font-size:22px;line-height:28px;font-weight:700;color:var(--ink)}
+.note{display:flex;align-items:flex-start;gap:12px;margin:16px 16px 0;padding:12px 16px;background:var(--accent-ov);border-radius:12px}
+.note b{display:block;font-size:14px;line-height:20px;font-weight:600;color:var(--accent)}
+.note span{display:block;font-size:16px;line-height:22px}
+.sk{background:var(--track);border-radius:9px;position:relative;overflow:hidden}
+.sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:translateX(-100%);animation:shine 1.3s infinite}
+@keyframes shine{to{transform:translateX(100%)}}
+.sk-card{background:var(--surface);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sk-row{display:flex;align-items:center;gap:12px}
+.errcard{margin:24px 16px 0;padding:24px 16px 16px;background:var(--surface);border-radius:24px;display:flex;flex-direction:column;gap:16px}
+.errcard h2{margin:0;font-size:18px;line-height:24px;font-weight:600}
+.errcard p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
+
+/* ---------- панель сценариев ---------- */
+.panel{flex:0 0 340px;width:340px;max-height:calc(100vh - 48px);overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 8px 30px rgba(20,24,50,.12)}
+.panel h2{margin:0 0 4px;font-size:18px;line-height:24px;font-weight:600}
+.panel .lead{margin:0 0 16px;font-size:13px;line-height:18px;color:var(--muted)}
+.panel h3{margin:20px 0 8px;font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.presets{display:flex;flex-direction:column;gap:6px}
+.preset{display:flex;align-items:baseline;gap:10px;text-align:left;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;min-height:44px}
+.preset code{flex:0 0 32px;font:600 12px/16px var(--font);color:var(--accent)}
+.preset span{font-size:14px;line-height:20px}
+.preset small{display:block;font-size:12px;line-height:16px;color:var(--muted)}
+.preset[aria-pressed=true]{border-color:var(--accent);background:var(--accent-ov)}
+.ctl{margin:0 0 12px}
+.ctl label,.ctl .lbl{display:block;font-size:13px;line-height:18px;margin-bottom:6px}
+.seg{display:flex;background:var(--surface);border-radius:12px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{flex:1 1 auto;min-height:36px;border:0;border-radius:9px;background:none;padding:6px 8px;font-size:13px;line-height:18px}
+.seg button[aria-checked=true]{background:#fff;box-shadow:0 1px 3px rgba(20,24,50,.18);font-weight:600}
+.seg.disabled{opacity:.45;pointer-events:none}
+.hint{font-size:12px;line-height:16px;color:var(--muted);margin-top:4px}
+.switch{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:6px 0;text-align:left;font-size:13px;line-height:18px;min-height:44px}
+.switch i{flex:0 0 40px;height:24px;border-radius:12px;background:var(--track);position:relative;transition:background .2s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:9px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .2s}
+.switch[aria-checked=true] i{background:var(--accent)}
+.switch[aria-checked=true] i::after{transform:translateX(16px)}
+.copy{margin-top:16px;width:100%;min-height:44px;border:1px solid var(--accent);border-radius:999px;background:#fff;color:var(--accent);font-weight:600;font-size:14px}
+.copy.done{background:var(--accent);color:#fff}
+.fab,.drawer-close{display:none}
+
+/* планшет и узкий десктоп: панель под телефоном */
+@media (max-width:899px){
+  .stage{flex-direction:column;align-items:center;gap:24px}
+  .panel{width:375px;flex-basis:auto;max-height:none}
+}
+/* настоящий телефон: прототип на весь экран, панель в шторке */
+@media (max-width:500px){
+  body{background:#fff}
+  .stage{display:block;padding:0;min-height:100dvh}
+  .device{width:100%;flex-basis:auto;height:100dvh;min-height:0;border-radius:0;box-shadow:none}
+  .statusbar,.home{display:none}
+  .viewport{padding-top:env(safe-area-inset-top)}
+  .fab{display:flex;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:20;align-items:center;gap:8px;min-height:48px;padding:0 18px;border:0;border-radius:999px;background:var(--ink);color:#fff;font-weight:600;font-size:14px;box-shadow:0 6px 20px rgba(20,24,50,.35)}
+  .panel{position:fixed;left:0;right:0;bottom:0;width:auto;max-height:82dvh;border-radius:24px 24px 0 0;z-index:30;transform:translateY(105%);transition:transform .28s cubic-bezier(.2,.8,.2,1);padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  body.drawer .panel{transform:none}
+  .drawer-close{display:flex;position:absolute;top:12px;right:12px;width:44px;height:44px;border:0;background:none;align-items:center;justify-content:center}
+  .drawer-scrim{position:fixed;inset:0;background:rgba(34,38,59,.5);z-index:25;opacity:0;pointer-events:none;transition:opacity .2s}
+  body.drawer .drawer-scrim{opacity:1;pointer-events:auto}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <main class="device" id="device" aria-label="Прототип мобильного приложения">
+    <div class="statusbar" aria-hidden="true">
+      <span>9:41</span>
+      <svg width="68" height="14" viewBox="0 0 82 22" fill="#000"><path d="M3.7 13H2.5a1 1 0 0 0-1 1v2.5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1V14a1 1 0 0 0-1-1m5.2-2.5H7.7a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1v-5a1 1 0 0 0-1-1M14.1 8h-1.2a1 1 0 0 0-1 1v7.5a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1m5.2-2.5h-1.2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h1.2a1 1 0 0 0 1-1v-10a1 1 0 0 0-1-1"/><path fill-rule="evenodd" d="M36.57 7.8c2.49 0 4.88.92 6.68 2.58.14.13.36.12.49 0l1.3-1.27a.34.34 0 0 0 0-.5 12.55 12.55 0 0 0-16.93 0 .34.34 0 0 0 0 .5l1.3 1.26c.13.13.34.14.48 0a10 10 0 0 1 6.68-2.57m0 4.22a5.4 5.4 0 0 1 3.67 1.44c.14.13.35.13.48 0l1.3-1.33a.37.37 0 0 0-.01-.52 7.9 7.9 0 0 0-10.88 0 .37.37 0 0 0 0 .52l1.29 1.32c.13.14.34.14.48 0 1-.92 2.31-1.43 3.67-1.43m2.52 2.8q0 .15-.1.28l-2.18 2.45a.3.3 0 0 1-.24.11.3.3 0 0 1-.24-.1l-2.18-2.46a.43.43 0 0 1 .01-.56 3.44 3.44 0 0 1 4.82 0 .4.4 0 0 1 .11.28" clip-rule="evenodd"/><path fill-rule="evenodd" d="M70.5 5c2.05 0 3.08 0 3.88.34a4.3 4.3 0 0 1 2.28 2.28c.34.8.34 1.83.34 3.88s0 3.08-.34 3.88a4.3 4.3 0 0 1-2.28 2.28c-.8.34-1.83.34-3.88.34h-12c-2.05 0-3.08 0-3.88-.34a4.3 4.3 0 0 1-2.28-2.28c-.34-.8-.34-1.83-.34-3.88s0-3.08.34-3.88a4.3 4.3 0 0 1 2.28-2.28C55.42 5 56.45 5 58.5 5zM58.28 6c-1.85 0-2.77 0-3.48.36a3.3 3.3 0 0 0-1.44 1.44C53 8.5 53 9.43 53 11.28v.44c0 1.85 0 2.77.36 3.48a3.3 3.3 0 0 0 1.44 1.44c.7.36 1.63.36 3.48.36h12.44c1.85 0 2.77 0 3.48-.36a3.3 3.3 0 0 0 1.44-1.44c.36-.7.36-1.63.36-3.48v-.44c0-1.85 0-2.77-.36-3.48a3.3 3.3 0 0 0-1.44-1.44C73.5 6 72.57 6 70.72 6z" clip-rule="evenodd" opacity=".35"/><path d="M54 11c0-1.4 0-2.1.27-2.63a2.5 2.5 0 0 1 1.1-1.1C55.9 7 56.6 7 58 7h13c1.4 0 2.1 0 2.64.27q.72.37 1.09 1.1C75 8.9 75 9.6 75 11v1c0 1.4 0 2.1-.27 2.64a2.5 2.5 0 0 1-1.1 1.09C73.1 16 72.4 16 71 16H58c-1.4 0-2.1 0-2.63-.27a2.5 2.5 0 0 1-1.1-1.1C54 14.1 54 13.4 54 12z"/></svg>
+    </div>
+    <div class="viewport" id="viewport"></div>
+    <div class="home" aria-hidden="true"><i></i></div>
+    <div class="layer" id="layer" aria-hidden="true">
+      <div class="scrim" data-act="close-sheet"></div>
+      <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></div>
+    </div>
+  </main>
+
+  <aside class="panel" id="panel" aria-label="Состояния прототипа">
+    <button class="drawer-close" data-act="drawer" aria-label="Закрыть панель сценариев"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2>Состояния прототипа</h2>
+    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Телефон кликабелен: карточки, ⓘ, шторки.</p>
+    <h3>Готовые сценарии</h3>
+    <div class="presets" id="presets"></div>
+    <h3>Настроить вручную</h3>
+    <div id="controls"></div>
+    <button class="copy" id="copy" type="button">Скопировать ссылку на это состояние</button>
+  </aside>
+</div>
+<button class="fab" data-act="drawer" type="button" aria-label="Открыть панель сценариев"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Сценарии</button>
+<div class="drawer-scrim" data-act="drawer"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------------- данные ---------------- */
+const ICONS={
+ psy:'M19.25 36C18.425 36 17.7188 35.7062 17.1315 35.1185C16.5438 34.5312 16.25 33.825 16.25 33V29.65C14.271 28.316 12.7345 26.6058 11.6405 24.5195C10.5468 22.4332 10 20.21 10 17.85C10 13.9917 11.3667 10.7188 14.1 8.0315C16.8333 5.34383 20.1417 4 24.025 4C27.9083 4 31.2083 5.35833 33.925 8.075C36.6417 10.7917 38 14.1 38 18C38 20.3667 37.45 22.575 36.35 24.625C35.25 26.675 33.7167 28.35 31.75 29.65V33C31.75 33.825 31.4563 34.5312 30.869 35.1185C30.2813 35.7062 29.575 36 28.75 36H19.25ZM19.5 33H28.5V28.3L30.3 27.05C31.7937 26.0183 32.9505 24.7012 33.7705 23.0985C34.5902 21.4958 35 19.792 35 17.987C35 14.929 33.9333 12.3333 31.8 10.2C29.6667 8.06667 27.0667 7 24 7C20.9333 7 18.3333 8.07683 16.2 10.2305C14.0667 12.3842 13 14.9887 13 18.044C13 19.848 13.4098 21.5443 14.2295 23.133C15.0495 24.7217 16.2063 26.0273 17.7 27.05L19.5 28.281V33ZM19.85 44C19.425 44 19.0688 43.8562 18.7815 43.5685C18.4938 43.2812 18.35 42.925 18.35 42.5V41H29.7V42.509C29.7 42.9363 29.5563 43.2917 29.269 43.575C28.9813 43.8583 28.625 44 28.2 44H19.85Z',
+ coach:'M11.5 44V41H22.5V32H18C15.2333 32 12.875 31.025 10.925 29.075C8.975 27.125 8 24.7667 8 22C8 20 8.55 18.1583 9.65 16.475C10.75 14.7917 12.2333 13.5667 14.1 12.8C14.4 10.3 15.4917 8.20833 17.375 6.525C19.2583 4.84167 21.4667 4 24 4C26.5333 4 28.7417 4.84167 30.625 6.525C32.5083 8.20833 33.6 10.3 33.9 12.8C35.7667 13.5667 37.25 14.7917 38.35 16.475C39.45 18.1583 40 20 40 22C40 24.7667 39.025 27.125 37.075 29.075C35.125 31.025 32.7667 32 30 32H25.5V41H37V44H11.5ZM18 29H30C31.9333 29 33.5833 28.3167 34.95 26.95C36.3167 25.5833 37 23.9333 37 22C37 20.6 36.6 19.325 35.8 18.175C35 17.025 33.9667 16.1667 32.7 15.6L31.1 14.9L30.9 13.15C30.6667 11.3833 29.9 9.91667 28.6 8.75C27.3 7.58333 25.7667 7 24 7C22.2333 7 20.7 7.58333 19.4 8.75C18.1 9.91667 17.3333 11.3833 17.1 13.15L16.9 14.9L15.3 15.6C14.0333 16.1667 13 17.025 12.2 18.175C11.4 19.325 11 20.6 11 22C11 23.9333 11.6833 25.5833 13.05 26.95C14.4167 28.3167 16.0667 29 18 29Z',
+ ther:'M24.537 30.55C26.7457 30.55 28.6167 29.8487 30.15 28.446C31.6833 27.0433 32.45 25.3447 32.45 23.35C32.45 21.6167 31.8903 20.1333 30.771 18.9C29.6517 17.6667 28.2947 17.05 26.7 17.05C25.3 17.05 24.1 17.5083 23.1 18.425C22.1 19.3417 21.6 20.4518 21.6 21.7555C21.6 22.3185 21.7083 22.8667 21.925 23.4C22.1417 23.9333 22.4667 24.4333 22.9 24.9L25.1 22.8C24.9333 22.6833 24.8083 22.5375 24.725 22.3625C24.6417 22.1875 24.6 22 24.6 21.8C24.6 21.3333 24.7833 20.9333 25.15 20.6C25.5167 20.2667 26.0333 20.1 26.7 20.1C27.4667 20.1 28.125 20.4083 28.675 21.025C29.225 21.6417 29.5 22.4333 29.5 23.4C29.5 24.573 29.0333 25.5662 28.1 26.3795C27.1667 27.1932 26 27.6 24.6 27.6C22.8933 27.6 21.45 26.925 20.27 25.575C19.09 24.225 18.5 22.557 18.5 20.571C18.5 19.5237 18.6917 18.5333 19.075 17.6C19.4583 16.6667 20.0167 15.8333 20.75 15.1L18.6 12.95C17.6 13.9167 16.825 15.0547 16.275 16.364C15.725 17.6737 15.45 19.047 15.45 20.484C15.45 23.2947 16.3335 25.675 18.1005 27.625C19.8675 29.575 22.013 30.55 24.537 30.55ZM12 44V35.4C10.1 33.6667 8.625 31.6417 7.575 29.325C6.525 27.0083 6 24.5667 6 22C6 17 7.75 12.75 11.25 9.25C14.75 5.75 19 4 24 4C28.1667 4 31.8583 5.225 35.075 7.675C38.2917 10.125 40.3833 13.3167 41.35 17.25L44.1 28.15C44.2333 28.6167 44.15 29.0417 43.85 29.425C43.55 29.8083 43.15 30 42.65 30H38V37C38 37.825 37.7063 38.5312 37.119 39.1185C36.5313 39.7062 35.825 40 35 40H30V44H27V37H35V27H40.7L38.45 18C37.65 14.7667 35.9 12.125 33.2 10.075C30.5 8.025 27.4333 7 24 7C19.8333 7 16.2917 8.44167 13.375 11.325C10.4583 14.2083 9 17.7257 9 21.877C9 24.0243 9.43867 26.0642 10.316 27.9965C11.1937 29.9292 12.4383 31.647 14.05 33.15L15 34.05V44H12Z',
+ law:'M28 19.3V16.9C29.1 16.4333 30.225 16.0833 31.375 15.85C32.525 15.6167 33.7333 15.5 35 15.5C35.8667 15.5 36.7167 15.5667 37.55 15.7C38.3833 15.8333 39.2 16 40 16.2V18.4C39.2 18.1 38.3917 17.875 37.575 17.725C36.7583 17.575 35.9 17.5 35 17.5C33.7333 17.5 32.5167 17.6583 31.35 17.975C30.1833 18.2917 29.0667 18.7333 28 19.3ZM28 30.3V27.85C29.1 27.4 30.225 27.0625 31.375 26.8375C32.525 26.6125 33.7333 26.5 35 26.5C35.8667 26.5 36.7167 26.5667 37.55 26.7C38.3833 26.8333 39.2 27 40 27.2V29.4C39.2 29.1 38.3917 28.875 37.575 28.725C36.7583 28.575 35.9 28.5 35 28.5C33.7333 28.5 32.5167 28.65 31.35 28.95C30.1833 29.25 29.0667 29.7 28 30.3ZM28 24.8V22.4C29.1 21.9333 30.225 21.5833 31.375 21.35C32.525 21.1167 33.7333 21 35 21C35.8667 21 36.7167 21.0667 37.55 21.2C38.3833 21.3333 39.2 21.5 40 21.7V23.9C39.2 23.6 38.3917 23.375 37.575 23.225C36.7583 23.075 35.9 23 35 23C33.7333 23 32.5167 23.1583 31.35 23.475C30.1833 23.7917 29.0667 24.2333 28 24.8ZM12.4 33C14.1857 33 15.9237 33.2083 17.614 33.625C19.3047 34.0417 20.9667 34.6667 22.6 35.5V14.15C21.1 13.15 19.473 12.375 17.719 11.825C15.965 11.275 14.192 11 12.4 11C11.1333 11 9.89167 11.1583 8.675 11.475C7.45833 11.7917 6.23333 12.1833 5 12.65V34.35C6.03333 33.8833 7.20833 33.5417 8.525 33.325C9.84167 33.1083 11.1333 33 12.4 33ZM25.6 35.5C27.2667 34.6667 28.9 34.0417 30.5 33.625C32.1 33.2083 33.8 33 35.6 33C36.8667 33 38.175 33.1 39.525 33.3C40.875 33.5 42.0333 33.7667 43 34.1V12.65C41.8667 12.0833 40.6697 11.6667 39.409 11.4C38.1483 11.1333 36.8787 11 35.6 11C33.8 11 32.0583 11.275 30.375 11.825C28.6917 12.375 27.1 13.15 25.6 14.15V35.5ZM24.1 40C22.4 38.7333 20.55 37.7583 18.55 37.075C16.55 36.3917 14.5 36.05 12.4 36.05C11.182 36.05 9.98583 36.2 8.8115 36.5C7.63717 36.8 6.46667 37.1667 5.3 37.6C4.53 37.9667 3.7875 37.9167 3.0725 37.45C2.3575 36.9833 2 36.3167 2 35.45V12.3C2 11.8 2.11667 11.3417 2.35 10.925C2.58333 10.5083 2.93333 10.1833 3.4 9.95C4.8 9.28333 6.2565 8.79167 7.7695 8.475C9.28283 8.15833 10.8263 8 12.4 8C14.5 8 16.5417 8.28333 18.525 8.85C20.5083 9.41667 22.3667 10.2833 24.1 11.45C25.8 10.2833 27.625 9.41667 29.575 8.85C31.525 8.28333 33.5333 8 35.6 8C37.1623 8 38.6945 8.15833 40.1965 8.475C41.6988 8.79167 43.15 9.28333 44.55 9.95C45.0167 10.1833 45.375 10.5083 45.625 10.925C45.875 11.3417 46 11.8 46 12.3V35.45C46 36.3797 45.625 37.0872 44.875 37.5725C44.125 38.0575 43.3833 38.0667 42.65 37.6C41.5167 37.1333 40.3628 36.7583 39.1885 36.475C38.0142 36.1917 36.818 36.05 35.6 36.05C33.5 36.05 31.4833 36.4 29.55 37.1C27.6167 37.8 25.8 38.7667 24.1 40Z',
+ fin:'M9 42C8.2 42 7.5 41.7 6.9 41.1C6.3 40.5 6 39.8 6 39V9C6 8.2 6.3 7.5 6.9 6.9C7.5 6.3 8.2 6 9 6H28.75V9H9V39H39V19.25H42V39C42 39.8 41.7 40.5 41.1 41.1C40.5 41.7 39.8 42 39 42H9ZM14.2 34.15H17.2V20.4H14.2V34.15ZM22.5 34.15H25.5V13.85H22.5V34.15ZM30.8 34.15H33.8V26.75H30.8V34.15ZM34.65 17.75V13.4H30.25V10.4H34.65V6H37.65V10.4H42V13.4H37.65V17.75H34.65Z',
+ nut:'M19.65 39.75L33.6 23H24.6L26.4 8.7L13.75 27H21.45L19.65 39.75ZM16 44L18 30H8L26 4H30L28 20H40L20 44H16Z'
+};
+/* Описания взяты со страницы специалистов lk.prosebya.ru; для нутрициолога — текст «ЗОЖ-эксперта». */
+const SPECS=[
+ {id:'psy',name:'Психолог',w:'с психологом',full:3000,desc:'Разобраться в жизненных проблемах, научиться регулировать своё состояние'},
+ {id:'coach',name:'Коуч',w:'с коучем',full:4000,desc:'Раскрыть потенциал и достичь конкретных целей'},
+ {id:'ther',name:'Психотерапевт',w:'с психотерапевтом',full:5000,desc:'Справиться с тяжёлыми состояниями и ментальными расстройствами'},
+ {id:'law',name:'Юрист',w:'с юристом',full:3000,desc:'Разобраться в сложностях закона и найти подходящее решение'},
+ {id:'fin',name:'Финансовый эксперт',w:'с финансовым экспертом',full:3000,desc:'Научиться управлять личным бюджетом и достигать финансовых целей'},
+ {id:'nut',name:'Нутрициолог',w:'с нутрициологом',full:3000,desc:'Наладить правильное питание и физическую активность'}
+];
+/* limit: {t:'p'|'c', left, total}; disc — скидка по подписке после бесплатного лимита, % */
+const CONFIGS={
+ composite:{label:'Составная',items:{psy:{limit:{t:'p',left:2,total:3},disc:10},coach:{limit:{t:'c',left:24,total:100},disc:25},ther:{limit:{t:'c',left:8,total:60},disc:0},law:{disc:10},fin:{disc:20},nut:{disc:0}}},
+ corp:{label:'Только компания',items:{psy:{limit:{t:'c',left:24,total:100},disc:0},coach:{limit:{t:'c',left:9,total:40},disc:0},ther:{limit:{t:'c',left:8,total:60},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
+ personal:{label:'Только личные',items:{psy:{limit:{t:'p',left:2,total:3},disc:0},coach:{limit:{t:'p',left:1,total:2},disc:0},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
+ discounts:{label:'Только скидки',items:{psy:{disc:10},coach:{disc:25},ther:{disc:20},law:{disc:10},fin:{disc:20},nut:{disc:0}}}
+};
+const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0};
+const PRESETS=[
+ {id:'s04',t:'Составная подписка',h:'Личный лимит, лимит компании, скидки, полная цена',s:{}},
+ {id:'s03',t:'Лимит компании, числа скрыты',h:'Доступно по лимиту, объём не показан',s:{config:'corp',hide:1}},
+ {id:'s06',t:'Лимит компании исчерпан',h:'Коуч и психотерапевт стали платными',s:{corpOut:1}},
+ {id:'s05',t:'Личный лимит исчерпан',h:'Психолог перешёл на скидку',s:{persOut:1}},
+ {id:'s01',t:'Только личные лимиты',h:'Нет лимита компании',s:{config:'personal'}},
+ {id:'s07',t:'Только скидки',h:'Бесплатных консультаций нет',s:{config:'discounts'}},
+ {id:'s08',t:'Временная блокировка',h:'Бесплатное закрыто до 20 октября',s:{block:'temp'}},
+ {id:'s09',t:'Постоянная блокировка',h:'Бесплатное не восстановится',s:{block:'perm'}},
+ {id:'x01',t:'Загрузка',h:'Скелетон вместо цен',s:{screen:'loading'}},
+ {id:'x02',t:'Ошибка загрузки',h:'«Повторить» ведёт к загрузке и экрану',s:{screen:'error'}}
+];
+
+/* ---------------- состояние ---------------- */
+let S=Object.assign({},DEFAULT);
+let view={name:'main',spec:null};
+let lastFocus=null,sheetKind=null,mainScroll=0,loadTimer=null;
+const $=s=>document.querySelector(s);
+const vp=$('#viewport');
+const fmt=n=>n.toLocaleString('ru-RU')+' ₽';
+
+function hasLimits(cfg,t){return Object.values(CONFIGS[cfg].items).some(i=>i.limit&&(!t||i.limit.t===t))}
+function normalize(){
+  const c=S.config;
+  if(!hasLimits(c)) S.block='none';
+  if(!hasLimits(c,'c')){S.corpOut=0;S.hide=0;S.stale=0}
+  if(!hasLimits(c,'p')) S.persOut=0;
+}
+function calc(spec){
+  const it=CONFIGS[S.config].items[spec.id];
+  const paid=Math.round(spec.full*(100-it.disc)/100);
+  const lim=it.limit||null;
+  let left=0;
+  if(lim){left=lim.left;if(lim.t==='c'&&S.corpOut)left=0;if(lim.t==='p'&&S.persOut)left=0}
+  const blocked=!!lim&&S.block!=='none';
+  const free=!!lim&&!blocked&&left>0;
+  return {spec,lim,disc:it.disc,paid,left,blocked,free,price:free?0:paid};
+}
+function list(){
+  const rows=SPECS.map(calc);
+  return rows.filter(r=>r.free).concat(rows.filter(r=>!r.free));
+}
+
+/* ---------------- разметка ---------------- */
+const chev='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#344079" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+const infoSvg=c=>`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.5M12 7.6v.01"/></svg>`;
+const backSvg='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+const closeSvg='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+function appbar(title,back){
+  return `<header class="appbar"><button class="iconbtn" data-act="${back?'back':'noop'}" aria-label="Назад">${backSvg}</button><h1>${title}</h1><span></span></header>`;
+}
+function program(){
+  const lim=hasLimits(S.config);
+  const blocked=lim&&S.block!=='none';
+  const renew=lim&&S.block!=='perm';
+  let h=`<div class="program${lim?'':' compact'}"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#344079')}</button></div>`;
+  if(blocked){
+    const temp=S.block==='temp';
+    h+=`<div class="pad-h"><div class="hr"></div></div><div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>${temp?'Скидки и платная запись доступны':'Скидки и платная запись сохраняются'}</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
+    if(renew) h+='<div class="renew" style="padding-top:12px">'+renewInner()+'</div>';
+    else h+='<div style="height:12px"></div>';
+  }else if(lim&&renew){
+    h+='<div class="pad-h"><div class="hr"></div></div><div class="renew">'+renewInner()+'</div>';
+  }
+  return h+'</div>';
+}
+function renewInner(){
+  return `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#344079" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><div><b>Лимиты обновятся 1 ноября</b><span>Сразу по всем специальностям</span></div>`;
+}
+function footer(r){
+  const right=r.disc?`скидка ${r.disc}%`:'без скидки';
+  const owner=r.lim&&(r.lim.t==='p'?'Личный лимит':'Общий лимит компании');
+  if(!r.lim) return `<div class="foot"><div class="foot-row"><b>${r.disc?`Скидка ${r.disc}% по подписке`:'Полная стоимость'}</b></div></div>`;
+  if(r.blocked) return `<div class="foot"><div class="foot-row"><b>Бесплатный доступ ограничен</b><span>${right}</span></div></div>`;
+  const hidden=r.lim.t==='c'&&S.hide;
+  if(r.left===0){
+    return `<div class="foot${hidden?' tight':''}"><div class="foot-row"><b>Лимит исчерпан</b><span>${right}</span></div>${hidden?'':'<div class="bar"></div>'}<div class="owner">${owner}</div></div>`;
+  }
+  if(hidden) return `<div class="foot tight"><div class="foot-row"><b>Бесплатно по лимиту</b><span>затем ${fmt(r.paid)}</span></div><div class="owner">${owner}</div></div>`;
+  const pct=Math.max(2,Math.round(r.left/r.lim.total*100));
+  return `<div class="foot"><div class="foot-row"><b>${r.left} из ${r.lim.total}</b><span>затем ${fmt(r.paid)}</span></div><div class="bar" role="img" aria-label="Осталось ${r.left} из ${r.lim.total}"><i style="width:${pct}%"></i></div><div class="owner">${owner}</div></div>`;
+}
+function card(r){
+  const s=r.spec;
+  return `<article class="card"><button class="card-main" data-act="catalog" data-id="${s.id}" aria-label="${s.name}, ${r.price===0?'бесплатно':fmt(r.price)}. Выбрать специалиста"><div class="card-top"><span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079" aria-hidden="true"><path d="${ICONS[s.id]}"/></svg></span><span class="card-name">${s.name}</span><span class="card-price">${fmt(r.price)}</span>${chev}</div><div class="card-desc">${s.desc}</div></button>${footer(r)}</article>`;
+}
+function mainScreen(){
+  return appbar('Моя подписка',false)+`<div class="section">${program()}</div><div class="heading"><h2>Стоимость консультаций</h2><p>Выберите специальность, чтобы перейти к записи</p></div><div class="cards">${list().map(card).join('')}</div>`;
+}
+function loadingScreen(){
+  const row='<div class="sk-card"><div class="sk-row"><div class="sk" style="width:40px;height:40px;border-radius:12px"></div><div class="sk" style="flex:1;height:18px"></div><div class="sk" style="width:56px;height:22px"></div></div><div class="sk" style="height:14px"></div><div class="sk" style="width:200px;height:14px"></div></div>';
+  return appbar('Моя подписка',false)+`<div class="section"><div class="program" style="padding:20px 16px;display:flex;flex-direction:column;gap:8px"><div class="sk" style="width:200px;height:18px"></div><div class="sk" style="width:150px;height:14px"></div><div class="sk" style="width:180px;height:14px;margin-top:8px"></div></div></div><div class="heading"><h2>Стоимость консультаций</h2></div><div class="cards" role="status" aria-label="Загружаем стоимость консультаций">${row+row+row}</div>`;
+}
+function errorScreen(){
+  return appbar('Моя подписка',false)+`<div class="errcard" role="alert"><div><h2>Не удалось загрузить стоимость консультаций</h2><p>Проверьте соединение и попробуйте ещё раз. Цену мы покажем только после загрузки.</p></div><button class="btn" data-act="retry">Повторить</button><button class="btn tertiary" data-act="catalog-any">Открыть каталог</button></div>`;
+}
+function catalogScreen(){
+  const sp=SPECS.find(x=>x.id===view.spec)||null;
+  let h=appbar(sp?sp.name:'Каталог',true);
+  if(sp&&S.screen==='ok'){
+    const r=calc(sp);
+    if(S.stale&&r.free&&r.lim.t==='c'){
+      h+=`<div class="note" role="status">${infoSvg('#344079')}<div><b>Лимит компании исчерпан</b><span>Стоимость консультации ${sp.w} сейчас — ${fmt(r.paid)}</span></div></div>`;
+    }else{
+      h+=`<div class="price-recap"><div>Стоимость сейчас<br><b>${fmt(r.price)}</b></div></div>`;
+    }
+  }
+  h+=`<div class="stub"><b>Существующий каталог</b><p>Открывается с выбранной специальностью. Дальше — существующий подбор специалиста и запись. В прототипе не реализовано.</p></div>`;
+  return h;
+}
+function sheetHTML(kind){
+  if(kind==='terms'){
+    const lim=hasLimits(S.config);
+    const rows=[['Срок','Действует до 31 декабря 2026'],['Цены','Платные цены по подписке зафиксированы при подключении']];
+    if(lim) rows.push(['Лимиты','Бесплатные лимиты обновляются по календарным месяцам. Следующее обновление — 1 ноября']);
+    rows.push([lim?'Когда лимит исчерпан':'Стоимость','Можно записаться по платной цене вашей подписки: для одних специальностей действует скидка, для других — полная стоимость']);
+    if(lim) rows.push(['Блокировка','Блокировка бесплатного доступа не отменяет скидки и возможность платной записи']);
+    return `<div class="handle"></div><div class="sheet-head"><h3 id="sheetTitle">Условия подписки</h3><button class="iconbtn" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${rows.map(r=>`<div><small>${r[0]}</small><p>${r[1]}</p></div>`).join('')}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
+  }
+  const temp=S.block==='temp';
+  return `<div class="handle"></div><div class="sheet-head"><h3 id="sheetTitle">Об ограничении</h3><button class="iconbtn" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${temp
+   ?'<p><b>Бесплатные консультации заблокированы до 20 октября</b></p><p>Скидки по подписке сохраняются. Вы можете выбрать специалиста и записаться по цене, указанной в списке</p><p>После снятия блокировки бесплатная запись будет зависеть от доступных лимитов</p>'
+   :'<p><b>Бесплатные консультации заблокированы</b></p><p>Бесплатный доступ по этой подписке не восстановится. Платная запись и скидки сохраняются</p>'}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
+}
+
+/* ---------------- рендер ---------------- */
+function render(){
+  normalize();
+  if(view.name==='catalog') vp.innerHTML=catalogScreen();
+  else if(S.screen==='loading') vp.innerHTML=loadingScreen();
+  else if(S.screen==='error') vp.innerHTML=errorScreen();
+  else vp.innerHTML=mainScreen();
+  if(view.name==='main') vp.scrollTop=mainScroll; else vp.scrollTop=0;
+  if(sheetKind) $('#sheet').innerHTML=sheetHTML(sheetKind);
+  renderPanel();
+  syncHash();
+}
+
+/* ---------------- панель ---------------- */
+function same(p){const t=Object.assign({},DEFAULT,p.s);return Object.keys(DEFAULT).every(k=>String(t[k])===String(S[k]))}
+function seg(key,opts,dis,hint){
+  return `<div class="ctl"><span class="lbl" id="l-${key}">${opts.title}</span><div class="seg${dis?' disabled':''}" role="radiogroup" aria-labelledby="l-${key}">${opts.list.map(o=>`<button type="button" role="radio" aria-checked="${String(S[key])===String(o[0])}" data-k="${key}" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>${dis&&hint?`<div class="hint">${hint}</div>`:''}</div>`;
+}
+function renderPanel(){
+  $('#presets').innerHTML=PRESETS.map(p=>`<button type="button" class="preset" data-preset="${p.id}" aria-pressed="${same(p)}"><code>${p.id.toUpperCase()}</code><span>${p.t}<small>${p.h}</small></span></button>`).join('');
+  const c=S.config,lim=hasLimits(c),corp=hasLimits(c,'c'),pers=hasLimits(c,'p');
+  $('#controls').innerHTML=
+   seg('config',{title:'Подписка',list:Object.keys(CONFIGS).map(k=>[k,CONFIGS[k].label])})+
+   seg('corpOut',{title:'Лимит компании',list:[[0,'Доступен'],[1,'Исчерпан']]},!corp,'В этой подписке нет лимита компании')+
+   seg('hide',{title:'Числа компании',list:[[0,'Показаны'],[1,'Скрыты']]},!corp,'В этой подписке нет лимита компании')+
+   seg('persOut',{title:'Личный лимит',list:[[0,'Есть остаток'],[1,'Исчерпан']]},!pers,'В этой подписке нет личных лимитов')+
+   seg('block',{title:'Блокировка бесплатного доступа',list:[['none','Нет'],['temp','Временная'],['perm','Постоянная']]},!lim,'Блокировка затрагивает только бесплатные консультации')+
+   seg('screen',{title:'Экран',list:[['ok','Обычный'],['loading','Загрузка'],['error','Ошибка']]})+
+   `<button type="button" class="switch" role="switch" aria-checked="${!!S.stale}" data-sw="stale" ${corp?'':'disabled style="opacity:.45"'}><i></i><span>Лимит компании закончился, пока человек выбирал: в записи показывается новая цена</span></button>`;
+}
+
+/* ---------------- ссылка ---------------- */
+function syncHash(){
+  const p=PRESETS.find(same);
+  const h=p?p.id:Object.keys(DEFAULT).map(k=>k+'='+S[k]).join('&');
+  try{history.replaceState(null,'','#'+h)}catch(e){}
+}
+function readHash(){
+  const h=location.hash.slice(1);
+  if(!h) return;
+  const p=PRESETS.find(x=>x.id===h.toLowerCase());
+  if(p){S=Object.assign({},DEFAULT,p.s);return}
+  const q=new URLSearchParams(h);
+  const n=Object.assign({},DEFAULT);
+  for(const k of Object.keys(DEFAULT)){
+    if(!q.has(k)) continue;
+    const v=q.get(k);
+    n[k]=(typeof DEFAULT[k]==='number')?Number(v)?1:0:v;
+  }
+  if(!CONFIGS[n.config]) n.config='composite';
+  if(!['none','temp','perm'].includes(n.block)) n.block='none';
+  if(!['ok','loading','error'].includes(n.screen)) n.screen='ok';
+  S=n;
+}
+
+/* ---------------- шторки ---------------- */
+function openSheet(kind,trigger){
+  sheetKind=kind;lastFocus=trigger||document.activeElement;
+  $('#sheet').innerHTML=sheetHTML(kind);
+  const l=$('#layer');l.classList.add('open');l.setAttribute('aria-hidden','false');
+  setTimeout(()=>{const b=$('#sheet [data-act=close-sheet]');if(b)b.focus()},50);
+}
+function closeSheet(){
+  if(!sheetKind) return;
+  sheetKind=null;
+  const l=$('#layer');l.classList.remove('open');l.setAttribute('aria-hidden','true');
+  if(lastFocus&&document.contains(lastFocus)) lastFocus.focus();
+}
+
+/* ---------------- события ---------------- */
+document.addEventListener('click',e=>{
+  const pr=e.target.closest('[data-preset]');
+  if(pr){const p=PRESETS.find(x=>x.id===pr.dataset.preset);S=Object.assign({},DEFAULT,p.s);view={name:'main',spec:null};closeSheet();clearTimeout(loadTimer);document.body.classList.remove('drawer');render();return}
+  const sg=e.target.closest('[data-k]');
+  if(sg){const k=sg.dataset.k;S[k]=(typeof DEFAULT[k]==='number')?Number(sg.dataset.v):sg.dataset.v;if(k==='config'||k==='screen'){view={name:'main',spec:null};closeSheet()}clearTimeout(loadTimer);render();return}
+  const sw=e.target.closest('[data-sw]');
+  if(sw){S[sw.dataset.sw]=S[sw.dataset.sw]?0:1;render();return}
+  if(e.target.closest('#copy')){
+    const b=$('#copy');
+    const done=()=>{b.classList.add('done');b.textContent='Ссылка скопирована';setTimeout(()=>{b.classList.remove('done');b.textContent='Скопировать ссылку на это состояние'},1800)};
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(location.href).then(done,done); else done();
+    return;
+  }
+  const a=e.target.closest('[data-act]');
+  if(!a) return;
+  switch(a.dataset.act){
+   case 'drawer': document.body.classList.toggle('drawer');break;
+   case 'terms': openSheet('terms',a);break;
+   case 'reasons': openSheet('reasons',a);break;
+   case 'close-sheet': closeSheet();break;
+   case 'catalog': mainScroll=vp.scrollTop;view={name:'catalog',spec:a.dataset.id};render();break;
+   case 'catalog-any': view={name:'catalog',spec:null};render();break;
+   case 'back': view={name:'main',spec:null};render();break;
+   case 'retry':
+     S.screen='loading';render();
+     loadTimer=setTimeout(()=>{S.screen='ok';render()},1100);break;
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(sheetKind) closeSheet(); else document.body.classList.remove('drawer')}
+  if(e.key==='Tab'&&sheetKind){
+    const f=[...document.querySelectorAll('#sheet button')];
+    if(!f.length) return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+});
+window.addEventListener('hashchange',()=>{readHash();view={name:'main',spec:null};closeSheet();render()});
+
+readHash();
+render();
+})();
+</script>
+</body>
+</html>
