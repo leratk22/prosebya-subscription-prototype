@@ -67,6 +67,9 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .card-top{display:flex;align-items:center;gap:8px;min-height:56px;padding:0 16px}
 .ico{flex:0 0 40px;width:40px;height:40px;border-radius:12px;background:var(--accent-ov);display:flex;align-items:center;justify-content:center;margin-right:4px}
 .card-name{flex:1;font-size:18px;line-height:24px;font-weight:600}
+.card-name-wrap{flex:1;min-width:0;display:flex;flex-direction:column}
+.card-name-wrap .card-name{flex:none}
+.card-free{font-size:14px;line-height:20px;font-weight:600;color:var(--accent)}
 .card-price{flex:0 0 auto;font-size:22px;line-height:28px;font-weight:700}
 .card-desc{padding:0 16px 12px;font-size:14px;line-height:20px;color:var(--muted)}
 .foot{border-top:1px solid var(--line);padding:12px 16px 14px}
@@ -181,7 +184,9 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
   <aside class="panel" id="panel" aria-label="Состояния прототипа">
     <button class="drawer-close" data-act="drawer" aria-label="Закрыть панель сценариев"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2>Состояния прототипа</h2>
-    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Телефон кликабелен: карточки, ⓘ, шторки.</p>
+    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Телефон кликабелен: карточки, ⓘ, шторки. У каждой специальности лимит либо личный, либо на компанию, но не оба сразу.</p>
+    <h3>Замечания продакта</h3>
+    <div id="product"></div>
     <h3>Готовые сценарии</h3>
     <div class="presets" id="presets"></div>
     <h3>Настроить вручную</h3>
@@ -221,7 +226,9 @@ const CONFIGS={
  personal:{label:'Только личные',items:{psy:{limit:{t:'p',left:2,total:3},disc:0},coach:{limit:{t:'p',left:1,total:2},disc:0},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
  discounts:{label:'Только скидки',items:{psy:{disc:10},coach:{disc:25},ther:{disc:20},law:{disc:10},fin:{disc:20},nut:{disc:0}}}
 };
-const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0};
+/* money: 1 — «меньше про деньги»: у бесплатных нет рублей; renew: 'cards' — дата обновления в карточках, а не в плашке */
+const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0,money:0,renew:'head'};
+const MODE=['money','renew'];
 const PRESETS=[
  {id:'s04',t:'Составная подписка',h:'Личный лимит, лимит компании, скидки, полная цена',s:{}},
  {id:'s03',t:'Лимит компании, числа скрыты',h:'Доступно по лимиту, объём не показан',s:{config:'corp',hide:1}},
@@ -277,8 +284,8 @@ function appbar(title,back){
 function program(){
   const lim=hasLimits(S.config);
   const blocked=lim&&S.block!=='none';
-  const renew=lim&&S.block!=='perm';
-  let h=`<div class="program${lim?'':' compact'}"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#344079')}</button></div>`;
+  const renew=lim&&S.block!=='perm'&&S.renew==='head';
+  let h=`<div class="program${(!blocked&&!renew)?' compact':''}"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#344079')}</button></div>`;
   if(blocked){
     const temp=S.block==='temp';
     h+=`<div class="pad-h"><div class="hr"></div></div><div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>${temp?'Скидки и платная запись доступны':'Скидки и платная запись сохраняются'}</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
@@ -294,20 +301,22 @@ function renewInner(){
 }
 function footer(r){
   const right=r.disc?`скидка ${r.disc}%`:'без скидки';
-  const owner=r.lim&&(r.lim.t==='p'?'Личный лимит':'Общий лимит компании');
+  const own=r.lim&&(r.lim.t==='p'?'Личный лимит':'Общий лимит компании');
+  const owner=r.lim&&(S.renew==='cards'&&!r.blocked?own+' · обновится 1 ноября':own);
   if(!r.lim) return `<div class="foot"><div class="foot-row"><b>${r.disc?`Скидка ${r.disc}% по подписке`:'Полная стоимость'}</b></div></div>`;
   if(r.blocked) return `<div class="foot"><div class="foot-row"><b>Бесплатный доступ ограничен</b><span>${right}</span></div></div>`;
   const hidden=r.lim.t==='c'&&S.hide;
   if(r.left===0){
     return `<div class="foot${hidden?' tight':''}"><div class="foot-row"><b>Лимит исчерпан</b><span>${right}</span></div>${hidden?'':'<div class="bar"></div>'}<div class="owner">${owner}</div></div>`;
   }
-  if(hidden) return `<div class="foot tight"><div class="foot-row"><b>Бесплатно по лимиту</b><span>затем ${fmt(r.paid)}</span></div><div class="owner">${owner}</div></div>`;
+  const then=S.money?'':`<span>затем ${fmt(r.paid)}</span>`;
+  if(hidden) return `<div class="foot tight"><div class="foot-row"><b>${S.money?'В пределах лимита':'Бесплатно по лимиту'}</b>${then}</div><div class="owner">${owner}</div></div>`;
   const pct=Math.max(2,Math.round(r.left/r.lim.total*100));
-  return `<div class="foot"><div class="foot-row"><b>${r.left} из ${r.lim.total}</b><span>затем ${fmt(r.paid)}</span></div><div class="bar" role="img" aria-label="Осталось ${r.left} из ${r.lim.total}"><i style="width:${pct}%"></i></div><div class="owner">${owner}</div></div>`;
+  return `<div class="foot"><div class="foot-row"><b>${r.left} из ${r.lim.total}</b>${then}</div><div class="bar" role="img" aria-label="Осталось ${r.left} из ${r.lim.total}"><i style="width:${pct}%"></i></div><div class="owner">${owner}</div></div>`;
 }
 function card(r){
   const s=r.spec;
-  return `<article class="card"><button class="card-main" data-act="catalog" data-id="${s.id}" aria-label="${s.name}, ${r.price===0?'бесплатно':fmt(r.price)}. Выбрать специалиста"><div class="card-top"><span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079" aria-hidden="true"><path d="${ICONS[s.id]}"/></svg></span><span class="card-name">${s.name}</span><span class="card-price">${fmt(r.price)}</span>${chev}</div><div class="card-desc">${s.desc}</div></button>${footer(r)}</article>`;
+  return `<article class="card"><button class="card-main" data-act="catalog" data-id="${s.id}" aria-label="${s.name}, ${r.price===0?'бесплатно':fmt(r.price)}. Выбрать специалиста"><div class="card-top"><span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079" aria-hidden="true"><path d="${ICONS[s.id]}"/></svg></span>${S.money&&r.free?`<span class="card-name-wrap"><span class="card-name">${s.name}</span><span class="card-free">Бесплатно</span></span>`:`<span class="card-name">${s.name}</span><span class="card-price">${fmt(r.price)}</span>`}${chev}</div><div class="card-desc">${s.desc}</div></button>${footer(r)}</article>`;
 }
 function mainScreen(){
   return appbar('Моя подписка',false)+`<div class="section">${program()}</div><div class="heading"><h2>Стоимость консультаций</h2><p>Выберите специальность, чтобы перейти к записи</p></div><div class="cards">${list().map(card).join('')}</div>`;
@@ -327,7 +336,7 @@ function catalogScreen(){
     if(S.stale&&r.free&&r.lim.t==='c'){
       h+=`<div class="note" role="status">${infoSvg('#344079')}<div><b>Лимит компании исчерпан</b><span>Стоимость консультации ${sp.w} сейчас — ${fmt(r.paid)}</span></div></div>`;
     }else{
-      h+=`<div class="price-recap"><div>Стоимость сейчас<br><b>${fmt(r.price)}</b></div></div>`;
+      h+=`<div class="price-recap"><div>${S.money&&r.free?'Сейчас':'Стоимость сейчас'}<br><b>${S.money&&r.free?'Бесплатно':fmt(r.price)}</b></div></div>`;
     }
   }
   h+=`<div class="stub"><b>Существующий каталог</b><p>Открывается с выбранной специальностью. Дальше — существующий подбор специалиста и запись. В прототипе не реализовано.</p></div>`;
@@ -337,7 +346,11 @@ function sheetHTML(kind){
   if(kind==='terms'){
     const lim=hasLimits(S.config);
     const rows=[['Срок','Действует до 31 декабря 2026'],['Цены','Платные цены по подписке зафиксированы при подключении']];
-    if(lim) rows.push(['Лимиты','Бесплатные лимиты обновляются по календарным месяцам. Следующее обновление — 1 ноября']);
+    if(lim) rows.push(['Лимиты','Бесплатные лимиты обновляются по календарным месяцам. Следующее обновление — 1 ноября. Лимит у каждой специальности либо личный, либо на компанию']);
+    if(lim&&S.money){
+      const after=SPECS.map(calc).filter(r=>r.lim).map(r=>`${r.spec.name} — ${fmt(r.paid)}${r.disc?` (скидка ${r.disc}%)`:''}`);
+      rows.push(['Цена после бесплатного лимита',after.join('<br>')]);
+    }
     rows.push([lim?'Когда лимит исчерпан':'Стоимость','Можно записаться по платной цене вашей подписки: для одних специальностей действует скидка, для других — полная стоимость']);
     if(lim) rows.push(['Блокировка','Блокировка бесплатного доступа не отменяет скидки и возможность платной записи']);
     return `<div class="handle"></div><div class="sheet-head"><h3 id="sheetTitle">Условия подписки</h3><button class="iconbtn" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${rows.map(r=>`<div><small>${r[0]}</small><p>${r[1]}</p></div>`).join('')}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
@@ -362,11 +375,19 @@ function render(){
 }
 
 /* ---------------- панель ---------------- */
-function same(p){const t=Object.assign({},DEFAULT,p.s);return Object.keys(DEFAULT).every(k=>String(t[k])===String(S[k]))}
+/* пресеты не зависят от «замечаний продакта»: их можно включить поверх любого сценария */
+function same(p){const t=Object.assign({},DEFAULT,p.s);return Object.keys(DEFAULT).every(k=>MODE.includes(k)||String(t[k])===String(S[k]))}
 function seg(key,opts,dis,hint){
   return `<div class="ctl"><span class="lbl" id="l-${key}">${opts.title}</span><div class="seg${dis?' disabled':''}" role="radiogroup" aria-labelledby="l-${key}">${opts.list.map(o=>`<button type="button" role="radio" aria-checked="${String(S[key])===String(o[0])}" data-k="${key}" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>${dis&&hint?`<div class="hint">${hint}</div>`:''}</div>`;
 }
 function renderPanel(){
+  const both=S.money===1&&S.renew==='cards';
+  $('#product').innerHTML=
+   `<button type="button" class="switch" role="switch" aria-checked="${both}" data-sw="both"><i></i><span><b>Все правки продакта</b><br>включить или вернуть как было</span></button>`+
+   seg('money',{title:'Цена и слово «Бесплатно»',list:[[0,'Как в макете'],[1,'Меньше про деньги']]})+
+   `<div class="hint" style="margin:-6px 0 12px">Бесплатные карточки без рублей: «Бесплатно» под названием, цена после лимита — в «Условиях подписки».</div>`+
+   seg('renew',{title:'Дата обновления лимитов',list:[['head','В плашке программы'],['cards','В карточках']]})+
+   `<div class="hint" style="margin:-6px 0 0">Обновляются только лимиты, поэтому дата стоит у специальностей с лимитом.</div>`;
   $('#presets').innerHTML=PRESETS.map(p=>`<button type="button" class="preset" data-preset="${p.id}" aria-pressed="${same(p)}"><code>${p.id.toUpperCase()}</code><span>${p.t}<small>${p.h}</small></span></button>`).join('');
   const c=S.config,lim=hasLimits(c),corp=hasLimits(c,'c'),pers=hasLimits(c,'p');
   $('#controls').innerHTML=
@@ -382,21 +403,23 @@ function renderPanel(){
 /* ---------------- ссылка ---------------- */
 function syncHash(){
   const p=PRESETS.find(same);
-  const h=p?p.id:Object.keys(DEFAULT).map(k=>k+'='+S[k]).join('&');
+  const modes=MODE.filter(k=>String(S[k])!==String(DEFAULT[k])).map(k=>k+'='+S[k]).join('&');
+  const h=p?p.id+(modes?'&'+modes:''):Object.keys(DEFAULT).map(k=>k+'='+S[k]).join('&');
   try{history.replaceState(null,'','#'+h)}catch(e){}
 }
 function readHash(){
   const h=location.hash.slice(1);
   if(!h) return;
-  const p=PRESETS.find(x=>x.id===h.toLowerCase());
-  if(p){S=Object.assign({},DEFAULT,p.s);return}
-  const q=new URLSearchParams(h);
-  const n=Object.assign({},DEFAULT);
+  const parts=h.split('&');
+  const p=PRESETS.find(x=>x.id===parts[0].toLowerCase());
+  const n=Object.assign({},DEFAULT,p?p.s:{});
+  const q=new URLSearchParams((p?parts.slice(1):parts).join('&'));
   for(const k of Object.keys(DEFAULT)){
     if(!q.has(k)) continue;
     const v=q.get(k);
     n[k]=(typeof DEFAULT[k]==='number')?Number(v)?1:0:v;
   }
+  if(!['head','cards'].includes(n.renew)) n.renew='head';
   if(!CONFIGS[n.config]) n.config='composite';
   if(!['none','temp','perm'].includes(n.block)) n.block='none';
   if(!['ok','loading','error'].includes(n.screen)) n.screen='ok';
@@ -420,11 +443,15 @@ function closeSheet(){
 /* ---------------- события ---------------- */
 document.addEventListener('click',e=>{
   const pr=e.target.closest('[data-preset]');
-  if(pr){const p=PRESETS.find(x=>x.id===pr.dataset.preset);S=Object.assign({},DEFAULT,p.s);view={name:'main',spec:null};closeSheet();clearTimeout(loadTimer);document.body.classList.remove('drawer');render();return}
+  if(pr){const p=PRESETS.find(x=>x.id===pr.dataset.preset);S=Object.assign({},DEFAULT,{money:S.money,renew:S.renew},p.s);view={name:'main',spec:null};closeSheet();clearTimeout(loadTimer);document.body.classList.remove('drawer');render();return}
   const sg=e.target.closest('[data-k]');
   if(sg){const k=sg.dataset.k;S[k]=(typeof DEFAULT[k]==='number')?Number(sg.dataset.v):sg.dataset.v;if(k==='config'||k==='screen'){view={name:'main',spec:null};closeSheet()}clearTimeout(loadTimer);render();return}
   const sw=e.target.closest('[data-sw]');
-  if(sw){S[sw.dataset.sw]=S[sw.dataset.sw]?0:1;render();return}
+  if(sw){
+    if(sw.dataset.sw==='both'){const on=S.money===1&&S.renew==='cards';S.money=on?0:1;S.renew=on?'head':'cards'}
+    else S[sw.dataset.sw]=S[sw.dataset.sw]?0:1;
+    render();return;
+  }
   if(e.target.closest('#copy')){
     const b=$('#copy');
     const done=()=>{b.classList.add('done');b.textContent='Ссылка скопирована';setTimeout(()=>{b.classList.remove('done');b.textContent='Скопировать ссылку на это состояние'},1800)};
