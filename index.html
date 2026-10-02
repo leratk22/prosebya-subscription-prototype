@@ -184,7 +184,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
   <aside class="panel" id="panel" aria-label="Состояния прототипа">
     <button class="drawer-close" data-act="drawer" aria-label="Закрыть панель сценариев"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2>Состояния прототипа</h2>
-    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Телефон кликабелен: карточки, ⓘ, шторки. У каждой специальности лимит либо личный, либо на компанию, но не оба сразу.</p>
+    <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Телефон кликабелен: карточки, ⓘ, шторки. В подписке лимит либо на компанию, либо на клиента, но не оба сразу.</p>
     <h3>Замечания продакта</h3>
     <div id="product"></div>
     <h3>Готовые сценарии</h3>
@@ -221,20 +221,21 @@ const SPECS=[
 ];
 /* limit: {t:'p'|'c', left, total}; disc — скидка по подписке после бесплатного лимита, % */
 const CONFIGS={
- composite:{label:'Составная',items:{psy:{limit:{t:'p',left:2,total:3},disc:10},coach:{limit:{t:'c',left:24,total:100},disc:25},ther:{limit:{t:'c',left:8,total:60},disc:0},law:{disc:10},fin:{disc:20},nut:{disc:0}}},
- corp:{label:'Только компания',items:{psy:{limit:{t:'c',left:24,total:100},disc:0},coach:{limit:{t:'c',left:9,total:40},disc:0},ther:{limit:{t:'c',left:8,total:60},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
- personal:{label:'Только личные',items:{psy:{limit:{t:'p',left:2,total:3},disc:0},coach:{limit:{t:'p',left:1,total:2},disc:0},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
+ composite:{label:'Лимит компании + скидки',items:{psy:{limit:{t:'c',left:24,total:100},disc:10},coach:{limit:{t:'c',left:9,total:40},disc:25},ther:{limit:{t:'c',left:8,total:60},disc:0},law:{disc:10},fin:{disc:20},nut:{disc:0}}},
+ compositeP:{label:'Личный лимит + скидки',items:{psy:{limit:{t:'p',left:2,total:3},disc:10},coach:{limit:{t:'p',left:1,total:2},disc:25},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:10},fin:{disc:20},nut:{disc:0}}},
+ corp:{label:'Только лимит компании',items:{psy:{limit:{t:'c',left:24,total:100},disc:0},coach:{limit:{t:'c',left:9,total:40},disc:0},ther:{limit:{t:'c',left:8,total:60},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
+ personal:{label:'Только личный лимит',items:{psy:{limit:{t:'p',left:2,total:3},disc:0},coach:{limit:{t:'p',left:1,total:2},disc:0},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
  discounts:{label:'Только скидки',items:{psy:{disc:10},coach:{disc:25},ther:{disc:20},law:{disc:10},fin:{disc:20},nut:{disc:0}}}
 };
-/* money: 1 — «меньше про деньги»: у бесплатных нет рублей; renew: 'cards' — дата обновления в карточках, а не в плашке */
 const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0,money:0,renew:'head'};
 const MODE=['money','renew'];
 const PRESETS=[
- {id:'s04',t:'Составная подписка',h:'Личный лимит, лимит компании, скидки, полная цена',s:{}},
+ {id:'s04',t:'Лимит компании + скидки',h:'Лимиты на компанию, у части специальностей скидки',s:{}},
+ {id:'s04p',t:'Личный лимит + скидки',h:'Лимиты на клиента, у части специальностей скидки',s:{config:'compositeP'}},
  {id:'s03',t:'Лимит компании, числа скрыты',h:'Доступно по лимиту, объём не показан',s:{config:'corp',hide:1}},
- {id:'s06',t:'Лимит компании исчерпан',h:'Коуч и психотерапевт стали платными',s:{corpOut:1}},
- {id:'s05',t:'Личный лимит исчерпан',h:'Психолог перешёл на скидку',s:{persOut:1}},
- {id:'s01',t:'Только личные лимиты',h:'Нет лимита компании',s:{config:'personal'}},
+ {id:'s06',t:'Лимит компании исчерпан',h:'Бесплатные специальности стали платными',s:{corpOut:1}},
+ {id:'s05',t:'Личный лимит исчерпан',h:'Все личные лимиты закончились',s:{config:'compositeP',persOut:1}},
+ {id:'s01',t:'Только личный лимит',h:'Без скидок и лимита компании',s:{config:'personal'}},
  {id:'s07',t:'Только скидки',h:'Бесплатных консультаций нет',s:{config:'discounts'}},
  {id:'s08',t:'Временная блокировка',h:'Бесплатное закрыто до 20 октября',s:{block:'temp'}},
  {id:'s09',t:'Постоянная блокировка',h:'Бесплатное не восстановится',s:{block:'perm'}},
@@ -346,7 +347,7 @@ function sheetHTML(kind){
   if(kind==='terms'){
     const lim=hasLimits(S.config);
     const rows=[['Срок','Действует до 31 декабря 2026'],['Цены','Платные цены по подписке зафиксированы при подключении']];
-    if(lim) rows.push(['Лимиты','Бесплатные лимиты обновляются по календарным месяцам. Следующее обновление — 1 ноября. Лимит у каждой специальности либо личный, либо на компанию']);
+    if(lim) rows.push(['Лимиты','Бесплатные лимиты обновляются по календарным месяцам. Следующее обновление — 1 ноября. '+(hasLimits(S.config,'c')?'Лимит один на всю компанию: его расходуют все сотрудники':'Лимит личный: у каждого сотрудника свой')]);
     if(lim&&S.money){
       const after=SPECS.map(calc).filter(r=>r.lim).map(r=>`${r.spec.name} — ${fmt(r.paid)}${r.disc?` (скидка ${r.disc}%)`:''}`);
       rows.push(['Цена после бесплатного лимита',after.join('<br>')]);
