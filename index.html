@@ -190,9 +190,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
     <button class="drawer-close" data-act="drawer" aria-label="Закрыть панель сценариев"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22263B" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2>Состояния прототипа</h2>
     <p class="lead">Раздел «Моя подписка», сотрудник по корпоративной программе. Все данные демонстрационные. Дата обновления лимитов стоит в карточках с лимитом. Телефон кликабелен: карточки, ⓘ, шторки. В подписке лимит либо на компанию, либо на клиента, но не оба сразу.</p>
-    <h3>Замечания продакта</h3>
-    <div id="product"></div>
-    <h3>Готовые сценарии</h3>
+        <h3>Готовые сценарии</h3>
     <div class="presets" id="presets"></div>
     <h3>Настроить вручную</h3>
     <div id="controls"></div>
@@ -380,9 +378,6 @@ function seg(key,opts,dis,hint){
   return `<div class="ctl"><span class="lbl" id="l-${key}">${opts.title}</span><div class="seg${dis?' disabled':''}" role="radiogroup" aria-labelledby="l-${key}">${opts.list.map(o=>`<button type="button" role="radio" aria-checked="${String(S[key])===String(o[0])}" data-k="${key}" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>${dis&&hint?`<div class="hint">${hint}</div>`:''}</div>`;
 }
 function renderPanel(){
-  $('#product').innerHTML=
-   seg('money',{title:'Цена и слово «Бесплатно»',list:[[0,'Как в макете'],[1,'Меньше про деньги']]})+
-   `<div class="hint" style="margin:-6px 0 12px">Бесплатные карточки без рублей: «Бесплатно» или небольшая цена под названием; цена после лимита — в «Условиях подписки».</div>`;
   $('#presets').innerHTML=PRESETS.map(p=>`<button type="button" class="preset" data-preset="${p.id}" aria-pressed="${same(p)}"><code>${p.id.toUpperCase()}</code><span>${p.t}<small>${p.h}</small></span></button>`).join('');
   const c=S.config,lim=hasLimits(c),corp=hasLimits(c,'c'),pers=hasLimits(c,'p');
   $('#controls').innerHTML=
@@ -392,6 +387,8 @@ function renderPanel(){
    seg('persOut',{title:'Личный лимит',list:[[0,'Есть остаток'],[1,'Исчерпан']]},!pers,'В этой подписке нет личных лимитов')+
    seg('block',{title:'Блокировка бесплатного доступа',list:[['none','Нет'],['temp','Временная'],['perm','Постоянная']]},!lim,'Блокировка затрагивает только бесплатные консультации')+
    seg('screen',{title:'Экран',list:[['ok','Обычный'],['loading','Загрузка'],['error','Ошибка']]})+
+   seg('money',{title:'Цена и слово «Бесплатно»',list:[[0,'Как в макете'],[1,'Меньше про деньги']]})+
+   `<div class="hint" style="margin:-6px 0 12px">«Меньше про деньги»: у бесплатных карточек нет рублей, «Бесплатно» или небольшая цена стоят под названием; цена после лимита — в «Условиях подписки».</div>`+
    `<button type="button" class="switch" role="switch" aria-checked="${!!S.stale}" data-sw="stale" ${corp?'':'disabled style="opacity:.45"'}><i></i><span>Лимит компании закончился, пока человек выбирал: в записи показывается новая цена</span></button>`;
 }
 
