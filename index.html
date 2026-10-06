@@ -42,7 +42,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .iconbtn:active{background:rgba(34,38,59,.05)}
 
 /* ---------- фон страницы: завиток из главного экрана ---------- */
-.device::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 -190 375 490%27 width=%27375%27 height=%27490%27%3E%3Cpath transform=%27translate%28-217.94 -126.27%29 rotate%28-18.4%29%27 d=%27M58.783 218.427C114.299 450.308 434.11 223.009 382.433 133.627 330.755 44.244 74.796 328.772 288.961 395.987 467.623 452.061 492.479 255.234 407.388 334.117 347.33 389.796 364.943 491.383 437.996 531.374 501.093 565.915 593.744 578.443 655.784 538.877%27 fill=%27none%27 stroke=%27%23344079%27 stroke-width=%2782%27 stroke-linecap=%27round%27 opacity=%27.06%27/%3E%3C/svg%3E") center/cover no-repeat;pointer-events:none;z-index:0}
+.device::before{content:"";position:absolute;left:0;right:0;bottom:0;top:190px;background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 -190 375 490%27 width=%27375%27 height=%27490%27%3E%3Cpath transform=%27translate%28-217.94 -126.27%29 rotate%28-18.4%29%27 d=%27M58.783 218.427C114.299 450.308 434.11 223.009 382.433 133.627 330.755 44.244 74.796 328.772 288.961 395.987 467.623 452.061 492.479 255.234 407.388 334.117 347.33 389.796 364.943 491.383 437.996 531.374 501.093 565.915 593.744 578.443 655.784 538.877%27 fill=%27none%27 stroke=%27%23344079%27 stroke-width=%2782%27 stroke-linecap=%27round%27 opacity=%27.06%27/%3E%3C/svg%3E") center/cover no-repeat;pointer-events:none;z-index:0}
 
 /* ---------- карточка программы ---------- */
 .section{padding:8px 16px 0}
@@ -130,9 +130,6 @@ button.program:active{background:#2c3047}
 .stub{margin:16px;padding:24px;border:2px dashed #C3C8D6;border-radius:24px;text-align:center}
 .stub b{display:block;font-size:18px;line-height:24px;font-weight:600}
 .stub p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
-.note{display:flex;align-items:flex-start;gap:12px;margin:16px 16px 0;padding:12px 16px;background:var(--accent-ov);border-radius:12px}
-.note b{display:block;font-size:14px;line-height:20px;font-weight:600;color:var(--accent)}
-.note span{display:block;font-size:16px;line-height:22px}
 .sk{background:var(--track);border-radius:9px;position:relative;overflow:hidden}
 .sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:translateX(-100%);animation:shine 1.3s infinite}
 @keyframes shine{to{transform:translateX(100%)}}
@@ -256,7 +253,7 @@ const CONFIGS={
  personal:{label:'Только личный лимит',items:{psy:{limit:{t:'p',left:2,total:3},disc:0},coach:{limit:{t:'p',left:1,total:2},disc:0},ther:{limit:{t:'p',left:1,total:2},disc:0},law:{disc:0},fin:{disc:0},nut:{disc:0}}},
  discounts:{label:'Только скидки',items:{psy:{disc:10},coach:{disc:25},ther:{disc:20},law:{disc:10},fin:{disc:20},nut:{disc:0}}}
 };
-const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',stale:0,money:0};
+const DEFAULT={config:'composite',block:'none',hide:0,corpOut:0,persOut:0,screen:'ok',money:0};
 const MODE=['money'];
 const PRESETS=[
  {id:'01',t:'Лимит компании + скидки',h:'Лимиты на компанию, у части специальностей скидки',s:{}},
@@ -287,7 +284,7 @@ function hasLimits(cfg,t){return Object.values(CONFIGS[cfg].items).some(i=>i.lim
 function normalize(){
   const c=S.config;
   if(!hasLimits(c)) S.block='none';
-  if(!hasLimits(c,'c')){S.corpOut=0;S.hide=0;S.stale=0}
+  if(!hasLimits(c,'c')){S.corpOut=0;S.hide=0}
   if(!hasLimits(c,'p')) S.persOut=0;
 }
 function calc(spec){
@@ -364,9 +361,7 @@ function catalogScreen(){
   let h=appbar(sp?sp.name:'Каталог',true);
   if(sp&&S.screen==='ok'){
     const r=calc(sp);
-    if(S.stale&&r.free&&r.lim.t==='c'){
-      h+=`<div class="note" role="status">${infoSvg('#344079')}<div><b>Лимит компании исчерпан</b><span>Стоимость консультации ${sp.w} сейчас — ${fmt(r.paid)}</span></div></div>`;
-    }
+
   }
   h+=`<div class="stub"><b>Существующий каталог</b><p>Открывается с выбранной специальностью. Дальше — существующий подбор специалиста и запись. В прототипе не реализовано.</p></div>`;
   return h;
@@ -421,7 +416,7 @@ function renderPanel(){
    seg('screen',{title:'Экран',list:[['ok','Обычный'],['loading','Загрузка'],['error','Ошибка']]})+
    seg('money',{title:'Размер цены',list:[[0,'Крупная цена'],[1,'Мелкая цена']]})+
    `<div class="hint" style="margin:-6px 0 12px">«Мелкая цена»: у бесплатных карточек нет рублей, а «Бесплатно» и цена стоят внизу карточки; цена после лимита — в «Условиях подписки».</div>`+
-   `<button type="button" class="switch" role="switch" aria-checked="${!!S.stale}" data-sw="stale" ${corp?'':'disabled style="opacity:.45"'}><i></i><span>Лимит компании закончился, пока человек выбирал: в записи показывается новая цена</span></button>`;
+   '';
 }
 
 /* ---------------- ссылка ---------------- */
