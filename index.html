@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#E9ECF2">
+<meta name="theme-color" content="#EAEFF8">
 <title>Просебя — Моя подписка · прототип</title>
 <link rel="preload" href="fonts/EuclidCircularA-Regular.woff" as="font" type="font/woff" crossorigin>
 <link rel="preload" href="fonts/EuclidCircularA-SemiBold.woff" as="font" type="font/woff" crossorigin>
@@ -27,66 +27,72 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 
 /* ---------- сцена: телефон + панель ---------- */
 .stage{min-height:100vh;display:flex;align-items:center;justify-content:center;gap:56px;padding:24px}
-.device{position:relative;flex:0 0 375px;width:375px;height:min(812px,calc(100vh - 48px));min-height:560px;background:#fff;border-radius:44px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 10px #1B1D2B,0 28px 70px rgba(20,24,50,.38)}
-.statusbar{flex:0 0 auto;height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 6px;font:600 15px/1 var(--font);background:#fff;position:relative;z-index:2}
+.device{position:relative;flex:0 0 375px;width:375px;height:min(812px,calc(100vh - 48px));min-height:560px;background:var(--soft);border-radius:44px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 10px #1B1D2B,0 28px 70px rgba(20,24,50,.38)}
+.statusbar{flex:0 0 auto;height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 6px;font:600 15px/1 var(--font);background:var(--soft);position:relative;z-index:2}
 .statusbar svg{display:block}
-.viewport{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:none;background:#fff}
+.viewport{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:none;background:var(--soft)}
 .viewport::-webkit-scrollbar{display:none}
-.home{flex:0 0 auto;height:26px;display:flex;align-items:center;justify-content:center;background:#fff}
+.home{flex:0 0 auto;height:26px;display:flex;align-items:center;justify-content:center;background:var(--soft)}
 .home i{width:134px;height:5px;border-radius:3px;background:#000}
 
 /* ---------- app bar ---------- */
-.appbar{position:sticky;top:0;z-index:1;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;height:56px;background:#fff;padding:0 4px}
+.appbar{position:sticky;top:0;z-index:1;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;height:56px;background:var(--soft);padding:0 4px}
 .appbar h1{margin:0;text-align:center;font-size:18px;line-height:24px;font-weight:600}
 .iconbtn{width:44px;height:44px;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;border-radius:22px;padding:0}
 .iconbtn:active{background:rgba(34,38,59,.05)}
 
+/* ---------- фон страницы: завиток из главного экрана ---------- */
+.page{position:relative}
+.page::before{content:"";position:absolute;left:0;top:56px;width:375px;height:300px;background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 375 300%27 width=%27375%27 height=%27300%27%3E%3Cpath transform=%27matrix%280.949 -0.316 0.316 0.949 -217.94 -126.274%29%27 d=%27M0 136.487C65.742 435.313 469.085 136.487 405.895 21.777C342.706 -92.933 18.278 278.853 284.924 362.348C507.368 432.002 541.537 177.214 433.932 280.514C357.983 353.425 378.4 484.447 469.085 534.981C547.413 578.63 663.027 593.359 741.2 541.244%27 fill=%27none%27 stroke=%27%23344079%27 stroke-width=%2790%27 stroke-linecap=%27round%27 opacity=%27.06%27/%3E%3C/svg%3E") no-repeat;pointer-events:none}
+.page>.section,.page>.heading,.page>.cards{position:relative}
+
 /* ---------- карточка программы ---------- */
 .section{padding:8px 16px 0}
-.program{background:var(--surface);border-radius:24px}
-.program-head{display:flex;align-items:flex-start;gap:8px;padding:12px 4px 8px 16px}
-.program-head>div{flex:1;padding-top:8px}
+.program{background:var(--ink);color:#fff;border-radius:16px}
+.program.skel{background:#fff;color:var(--ink);border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1)}
+.program-head{display:flex;align-items:center;gap:8px;padding:12px 4px 12px 16px}
+.program-head>div{flex:1}
 .program-head b{display:block;font-size:18px;line-height:24px;font-weight:600}
-.program-head span{display:block;font-size:14px;line-height:20px;color:var(--muted)}
+.program-head span{display:block;font-size:14px;line-height:20px;color:rgba(255,255,255,.8)}
 .hr{height:1px;background:var(--line)}
 .pad-h{padding:0 16px}
-.block{display:flex;align-items:center;gap:12px;margin:12px 12px 0;padding:12px 4px 12px 16px;min-height:44px;background:var(--negative-ov);border-radius:16px}
+.block{display:flex;align-items:center;gap:12px;margin:8px 16px 0;padding:12px 4px 12px 16px;min-height:44px;background:var(--negative-ov);border-radius:16px;position:relative}
 .block>div{flex:1}
 .block b{display:block;font-size:16px;line-height:22px;font-weight:600}
-.block span{display:block;font-size:14px;line-height:20px;color:var(--muted);margin-top:2px}
+.block span{display:block;font-size:14px;line-height:20px;color:rgba(34,38,59,.6);margin-top:2px}
 .renew{display:flex;align-items:center;gap:12px;padding:12px 16px 16px}
 .renew b{display:block;font-size:16px;line-height:22px;font-weight:500}
 .renew span{display:block;font-size:14px;line-height:20px;color:var(--muted)}
-.program.compact .program-head{padding-bottom:12px}
 
 .heading{padding:24px 16px 12px}
-.heading h2{margin:0;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.02em}
-.heading p{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
+.heading h2{margin:0;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.015em}
+.heading p{margin:4px 0 0;font-size:14px;line-height:20px;color:rgba(34,38,59,.6)}
 
 /* ---------- карточки специальностей ---------- */
-.cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 24px}
-.card{background:var(--surface);border-radius:24px;padding:8px 0 0;overflow:hidden}
+.cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}
+.card{background:#fff;border:1px solid rgba(52,64,121,.14);border-radius:16px;box-shadow:0 6px 10px -4px rgba(34,38,59,.1);overflow:hidden}
 .card-main{display:block;width:100%;border:0;background:none;text-align:left;padding:0}
 .card-main:active{background:rgba(34,38,59,.04)}
-.card-top{display:flex;align-items:center;gap:8px;min-height:56px;padding:0 16px}
-.ico{flex:0 0 40px;width:40px;height:40px;border-radius:12px;background:var(--accent-ov);display:flex;align-items:center;justify-content:center;margin-right:4px}
-.card-name{flex:1;font-size:18px;line-height:24px;font-weight:600}
+.card-top{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px 8px}
+.ico{flex:0 0 40px;width:40px;height:40px;border-radius:12px;background:var(--accent-ov);display:flex;align-items:center;justify-content:center}
+.card-name{flex:1;font-size:16px;line-height:24px;font-weight:500}
+.card.big .card-name{font-size:18px;font-weight:600}
 .card-name-wrap{flex:1;min-width:0;display:flex;flex-direction:column}
 .card-name-wrap .card-name{flex:none}
 .card-free{font-size:14px;line-height:20px;font-weight:600;color:var(--accent)}
 .card-free.paid{color:var(--ink)}
 .card-price{flex:0 0 auto;font-size:22px;line-height:28px;font-weight:700}
 .card-desc{padding:0 16px 12px;font-size:14px;line-height:20px;color:var(--muted)}
-.foot{border-top:1px solid var(--line);padding:12px 16px 14px}
+.foot{border-top:1px solid var(--line);padding:12px 16px;background:#fff}
 .foot-row{display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px}
 .foot-row b{flex:1;font-weight:600}
 .foot-row span{color:var(--muted);text-align:right}
-.foot-row b.foot-price{flex:0 0 auto}
+.foot-row b.foot-price{flex:0 0 auto;padding:2px 8px;border-radius:100px;background:rgba(34,38,59,.06);font-size:12px;line-height:16px;font-weight:500;color:var(--ink)}
 .foot-row b span.dsc{font-weight:400;text-align:left}
-.foot-row b.foot-free{flex:0 0 auto;color:var(--accent)}
-.bar{height:6px;border-radius:3px;background:var(--track);margin-top:8px}
+.foot-row b.foot-free{flex:0 0 auto;padding:2px 8px;border-radius:100px;background:var(--accent-ov);font-size:12px;line-height:16px;font-weight:500;color:var(--accent)}
+.bar{height:6px;border-radius:3px;background:var(--accent-ov);margin-top:8px}
 .bar i{display:block;height:100%;border-radius:3px;background:var(--accent);min-width:0}
-.owner{margin-top:8px;font-size:12px;line-height:16px;color:var(--muted)}
+.owner{margin-top:8px;font-size:12px;line-height:16px;font-weight:500;color:rgba(34,38,59,.6)}
 .foot.tight .owner{margin-top:4px}
 
 /* ---------- шторки ---------- */
@@ -110,7 +116,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .stub{margin:16px;padding:24px;border:2px dashed #C3C8D6;border-radius:24px;text-align:center}
 .stub b{display:block;font-size:18px;line-height:24px;font-weight:600}
 .stub p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
-.price-recap{margin:16px 16px 0;padding:16px;background:var(--surface);border-radius:24px;display:flex;align-items:center;gap:12px}
+.price-recap{margin:16px 16px 0;padding:16px;background:#fff;border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1);border-radius:16px;display:flex;align-items:center;gap:12px}
 .price-recap div{flex:1;font-size:14px;line-height:20px;color:var(--muted)}
 .price-recap b{font-size:22px;line-height:28px;font-weight:700;color:var(--ink)}
 .note{display:flex;align-items:flex-start;gap:12px;margin:16px 16px 0;padding:12px 16px;background:var(--accent-ov);border-radius:12px}
@@ -119,9 +125,9 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .sk{background:var(--track);border-radius:9px;position:relative;overflow:hidden}
 .sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:translateX(-100%);animation:shine 1.3s infinite}
 @keyframes shine{to{transform:translateX(100%)}}
-.sk-card{background:var(--surface);border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.sk-card{background:#fff;border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .sk-row{display:flex;align-items:center;gap:12px}
-.errcard{margin:24px 16px 0;padding:24px 16px 16px;background:var(--surface);border-radius:24px;display:flex;flex-direction:column;gap:16px}
+.errcard{margin:24px 16px 0;padding:24px 16px 16px;background:#fff;border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1);border-radius:16px;display:flex;flex-direction:column;gap:16px}
 .errcard h2{margin:0;font-size:18px;line-height:24px;font-weight:600}
 .errcard p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
 
@@ -159,7 +165,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 }
 /* настоящий телефон: прототип на весь экран, панель в шторке */
 @media (max-width:500px){
-  body{background:#fff}
+  body{background:var(--soft)}
   .stage{display:block;padding:0;min-height:100dvh}
   .device{width:100%;flex-basis:auto;height:100dvh;min-height:0;border-radius:0;box-shadow:none}
   .statusbar,.home{display:none}
@@ -289,15 +295,13 @@ function appbar(title,back){
   return `<header class="appbar"><button class="iconbtn" data-act="${back?'back':'noop'}" aria-label="Назад">${backSvg}</button><h1>${title}</h1><span></span></header>`;
 }
 function program(){
-  const lim=hasLimits(S.config);
-  const blocked=lim&&S.block!=='none';
-  let h=`<div class="program${!blocked?' compact':''}"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#344079')}</button></div>`;
-  if(blocked){
-    const temp=S.block==='temp';
-    h+=`<div class="pad-h"><div class="hr"></div></div><div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>${temp?'Скидки и платная запись доступны':'Скидки и платная запись сохраняются'}</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
-    h+='<div style="height:12px"></div>';
-  }
-  return h+'</div>';
+  return `<div class="program"><div class="program-head"><div><b>Корпоративная программа</b><span>Действует до 31 декабря 2026</span></div><button class="iconbtn" data-act="terms" aria-label="Условия подписки">${infoSvg('#FFFFFF')}</button></div></div>`;
+}
+function blockCard(){
+  const blocked=hasLimits(S.config)&&S.block!=='none';
+  if(!blocked) return '';
+  const temp=S.block==='temp';
+  return `<div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>${temp?'Скидки и платная запись доступны':'Скидки и платная запись сохраняются'}</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
 }
 function footer(r){
   const right=r.disc?`скидка ${r.disc}%`:'без скидки';
@@ -317,14 +321,14 @@ function footer(r){
 }
 function card(r){
   const s=r.spec;
-  return `<article class="card"><button class="card-main" data-act="catalog" data-id="${s.id}" aria-label="${s.name}, ${r.price===0?'бесплатно':fmt(r.price)}. Выбрать специалиста"><div class="card-top"><span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079" aria-hidden="true"><path d="${ICONS[s.id]}"/></svg></span>${S.money?`<span class="card-name">${s.name}</span>`:`<span class="card-name">${s.name}</span><span class="card-price">${fmt(r.price)}</span>`}${chev}</div></button>${footer(r)}</article>`;
+  return `<article class="card${S.money?'':' big'}"><button class="card-main" data-act="catalog" data-id="${s.id}" aria-label="${s.name}, ${r.price===0?'бесплатно':fmt(r.price)}. Выбрать специалиста"><div class="card-top"><span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079" aria-hidden="true"><path d="${ICONS[s.id]}"/></svg></span>${S.money?`<span class="card-name">${s.name}</span>`:`<span class="card-name">${s.name}</span><span class="card-price">${fmt(r.price)}</span>`}${chev}</div></button>${footer(r)}</article>`;
 }
 function mainScreen(){
-  return appbar('Моя подписка',false)+`<div class="section">${program()}</div><div class="heading"><h2>Стоимость консультаций</h2><p>Выберите специальность, чтобы перейти к записи</p></div><div class="cards">${list().map(card).join('')}</div>`;
+  return `<div class="page">`+appbar('Моя подписка',false)+`<div class="section">${program()}</div>${blockCard()}<div class="heading"><h2>Стоимость консультаций</h2><p>Выберите специальность, чтобы перейти к записи</p></div><div class="cards">${list().map(card).join('')}</div></div>`;
 }
 function loadingScreen(){
   const row='<div class="sk-card"><div class="sk-row"><div class="sk" style="width:40px;height:40px;border-radius:12px"></div><div class="sk" style="flex:1;height:18px"></div><div class="sk" style="width:56px;height:22px"></div></div><div class="sk" style="height:14px"></div><div class="sk" style="width:200px;height:14px"></div></div>';
-  return appbar('Моя подписка',false)+`<div class="section"><div class="program" style="padding:20px 16px;display:flex;flex-direction:column;gap:8px"><div class="sk" style="width:200px;height:18px"></div><div class="sk" style="width:150px;height:14px"></div><div class="sk" style="width:180px;height:14px;margin-top:8px"></div></div></div><div class="heading"><h2>Стоимость консультаций</h2></div><div class="cards" role="status" aria-label="Загружаем стоимость консультаций">${row+row+row}</div>`;
+  return appbar('Моя подписка',false)+`<div class="section"><div class="program skel" style="padding:20px 16px;display:flex;flex-direction:column;gap:8px"><div class="sk" style="width:200px;height:18px"></div><div class="sk" style="width:150px;height:14px"></div><div class="sk" style="width:180px;height:14px;margin-top:8px"></div></div></div><div class="heading"><h2>Стоимость консультаций</h2></div><div class="cards" role="status" aria-label="Загружаем стоимость консультаций">${row+row+row}</div>`;
 }
 function errorScreen(){
   return appbar('Моя подписка',false)+`<div class="errcard" role="alert"><div><h2>Не удалось загрузить стоимость консультаций</h2><p>Проверьте соединение и попробуйте ещё раз. Цену мы покажем только после загрузки.</p></div><button class="btn" data-act="retry">Повторить</button><button class="btn tertiary" data-act="catalog-any">Открыть каталог</button></div>`;
