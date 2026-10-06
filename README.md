@@ -28,6 +28,21 @@
 
 В панели «Настроить вручную» состояния собираются из отдельных параметров: подписка, лимит компании, числа компании, личный лимит, блокировка, экран.
 
+## Ссылки для телефона (без панели сценариев)
+
+Добавьте к любому адресу `&clean=1`: панель и кнопка «Сценарии» скроются, останется только экран.
+
+| Ссылка | Сценарий |
+|---|---|
+| [`#01&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#01&clean=1) | Лимит компании + скидки, крупная цена |
+| [`#01&money=1&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#01&money=1&clean=1) | То же, мелкая цена |
+| [`#03&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#03&clean=1) | Лимит компании, числа скрыты |
+| [`#04&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#04&clean=1) | Лимит компании исчерпан |
+| [`#07&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#07&clean=1) | Временная блокировка |
+| [`#08&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#08&clean=1) | Постоянная блокировка |
+| [`#06&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#06&clean=1) | Только скидки |
+| [`#11&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#11&clean=1) | Ошибка загрузки (кнопка «Повторить» работает) |
+
 ## Настройка «Размер цены»
 
 Настройка в блоке «Настроить вручную». Работает поверх любого сценария и записывается в ссылку:
