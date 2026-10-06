@@ -92,7 +92,8 @@ button.program:active{background:#2c3047}
 .foot-row b{flex:1;font-weight:500}
 .foot-row span{color:var(--muted);text-align:right}
 .foot-row b.foot-price{flex:0 0 auto;padding:2px 8px;border-radius:100px;background:rgba(34,38,59,.06);font-size:12px;line-height:16px;font-weight:500;color:var(--ink)}
-.foot-row b span.dsc{font-weight:400;text-align:left}
+.foot-row b span.dsc{display:inline-flex;align-items:center;gap:4px;margin-left:4px;font-weight:400;text-align:left;color:rgba(34,38,59,.6)}
+.dsc i{flex:0 0 4px;width:4px;height:4px;border-radius:2px;background:rgba(34,38,59,.4)}
 .foot-row b.foot-free{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;background:var(--accent-ov);font-size:12px;line-height:16px;font-weight:500;color:var(--accent)}
 .foot.lim{display:flex;flex-direction:column;gap:12px;padding:8px 16px 12px}
 .grp{display:flex;flex-direction:column;gap:8px}
@@ -331,7 +332,7 @@ function footer(r,n){
   const bar=(w)=>`<div class="bar"${w!=null?` role="img" aria-label="Осталось ${r.left} из ${r.lim.total}"`:''}>${w!=null?`<i style="--w:${w}%;--n:${n||0}"></i>`:''}</div>`;
   if(r.left===0){
     const tail=S.money?`<b class="foot-price">${fmt(r.paid)}</b>`:`<span>${right}</span>`;
-    const lab=S.money?`<b>Лимит исчерпан${r.disc?`<span class="dsc"> · скидка ${r.disc}%</span>`:''}</b>`:'<b>Лимит исчерпан</b>';
+    const lab=S.money?`<b>Лимит исчерпан${r.disc?`<span class="dsc"><i></i>скидка ${r.disc}%</span>`:''}</b>`:'<b>Лимит исчерпан</b>';
     return `<div class="foot lim"><div class="grp">${ownRow}${hidden?'':bar(null)}</div><div class="foot-row">${lab}${tail}</div></div>`;
   }
   const then=S.money?`<b class="foot-free">${eyeSvg}Бесплатно</b>`:`<span>затем ${fmt(r.paid)}</span>`;
