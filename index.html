@@ -122,7 +122,6 @@ button.program:active{background:#2c3047}
 .terms small{display:block;font-size:14px;line-height:20px;color:var(--muted)}
 .terms p{margin:2px 0 0;font-size:16px;line-height:22px}
 .sheet .btn{min-height:44px;border-radius:32px;font-size:14px}
-.btn.link{text-decoration:none;margin-top:16px;min-height:48px;font-size:15px;text-align:center;padding:0 16px}
 .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border:0;border-radius:999px;background:var(--action);color:var(--ink);font-size:16px;font-weight:600}
 .btn:active{background:var(--action-hover)}
 .btn.tertiary{background:none;color:var(--accent);min-height:44px}
@@ -244,15 +243,13 @@ const ICONS={
  nut:'M19.65 39.75L33.6 23H24.6L26.4 8.7L13.75 27H21.45L19.65 39.75ZM16 44L18 30H8L26 4H30L28 20H40L20 44H16Z'
 };
 /* Описания взяты со страницы специалистов lk.prosebya.ru; для нутрициолога — текст «ЗОЖ-эксперта». */
-const LIST_URL='https://lk.prosebya.ru/specialist/list';
-/* ссылки на списки специалистов на lk.prosebya.ru; для нутрициолога на сайте специальность называется «ЗОЖ-эксперт» */
 const SPECS=[
- {id:'psy',name:'Психолог',w:'с психологом',full:3000,url:'https://lk.prosebya.ru/specialist/2c299564-e5bb-4fb8-8004-915265a7b9b5/speciality?specialtyName=%D0%9F%D1%81%D0%B8%D1%85%D0%BE%D0%BB%D0%BE%D0%B3&isDoctorSearchAvailable=true',desc:'Разобраться в жизненных проблемах, научиться регулировать своё состояние'},
- {id:'coach',name:'Коуч',w:'с коучем',full:4000,url:'https://lk.prosebya.ru/specialist/63a0ce9d-2f6f-4a06-82f4-ef9ea0aa4a7d/speciality?specialtyName=%D0%9A%D0%BE%D1%83%D1%87&isDoctorSearchAvailable=true',desc:'Раскрыть потенциал и достичь конкретных целей'},
- {id:'ther',name:'Психотерапевт',w:'с психотерапевтом',full:5000,url:'https://lk.prosebya.ru/specialist/85ad93c0-1ec5-41da-a110-d8c3a897a667/speciality?specialtyName=%D0%9F%D1%81%D0%B8%D1%85%D0%BE%D1%82%D0%B5%D1%80%D0%B0%D0%BF%D0%B5%D0%B2%D1%82&isDoctorSearchAvailable=true',desc:'Справиться с тяжёлыми состояниями и ментальными расстройствами'},
- {id:'law',name:'Юрист',w:'с юристом',full:3000,url:'https://lk.prosebya.ru/specialist/9e4c03af-8914-4d98-8882-8cbcb3d58f69/speciality?specialtyName=%D0%AE%D1%80%D0%B8%D1%81%D1%82&isDoctorSearchAvailable=false',desc:'Разобраться в сложностях закона и найти подходящее решение'},
- {id:'fin',name:'Финансовый эксперт',w:'с финансовым экспертом',full:3000,url:'https://lk.prosebya.ru/specialist/ef5c686f-b92a-41b2-aee0-ec386e8faa18/speciality?specialtyName=%D0%A4%D0%B8%D0%BD%D0%B0%D0%BD%D1%81%D0%BE%D0%B2%D1%8B%D0%B9+%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D1%80%D1%82&isDoctorSearchAvailable=false',desc:'Научиться управлять личным бюджетом и достигать финансовых целей'},
- {id:'nut',name:'Нутрициолог',w:'с нутрициологом',full:3000,url:'https://lk.prosebya.ru/specialist/661d95fa-a6ec-437b-9846-f148fface444/speciality?specialtyName=%D0%97%D0%9E%D0%96-%D1%8D%D0%BA%D1%81%D0%BF%D0%B5%D1%80%D1%82&isDoctorSearchAvailable=false',desc:'Наладить правильное питание и физическую активность'}
+ {id:'psy',name:'Психолог',w:'с психологом',full:3000,desc:'Разобраться в жизненных проблемах, научиться регулировать своё состояние'},
+ {id:'coach',name:'Коуч',w:'с коучем',full:4000,desc:'Раскрыть потенциал и достичь конкретных целей'},
+ {id:'ther',name:'Психотерапевт',w:'с психотерапевтом',full:5000,desc:'Справиться с тяжёлыми состояниями и ментальными расстройствами'},
+ {id:'law',name:'Юрист',w:'с юристом',full:3000,desc:'Разобраться в сложностях закона и найти подходящее решение'},
+ {id:'fin',name:'Финансовый эксперт',w:'с финансовым экспертом',full:3000,desc:'Научиться управлять личным бюджетом и достигать финансовых целей'},
+ {id:'nut',name:'Нутрициолог',w:'с нутрициологом',full:3000,desc:'Наладить правильное питание и физическую активность'}
 ];
 /* limit: {t:'p'|'c', left, total}; disc — скидка по подписке после бесплатного лимита, % */
 const CONFIGS={
@@ -376,8 +373,7 @@ function catalogScreen(){
       h+=`<div class="price-recap"><div>${S.money&&r.free?'Сейчас':'Стоимость сейчас'}<br><b>${S.money&&r.free?'Бесплатно':fmt(r.price)}</b></div></div>`;
     }
   }
-  const href=sp?sp.url:LIST_URL;
-  h+=`<div class="stub"><b>Существующий каталог</b><p>Открывается с выбранной специальностью. Дальше — существующий подбор специалиста и запись на сайте. Цены на сайте реальные, в прототипе демонстрационные.</p><a class="btn link" href="${href}" target="_blank" rel="noopener">${sp?`Список специалистов: ${sp.name}`:'Все специалисты'} на lk.prosebya.ru</a></div>`;
+  h+=`<div class="stub"><b>Существующий каталог</b><p>Открывается с выбранной специальностью. Дальше — существующий подбор специалиста и запись. В прототипе не реализовано.</p></div>`;
   return h;
 }
 function sheetHTML(kind){
