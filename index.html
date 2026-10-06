@@ -130,9 +130,6 @@ button.program:active{background:#2c3047}
 .stub{margin:16px;padding:24px;border:2px dashed #C3C8D6;border-radius:24px;text-align:center}
 .stub b{display:block;font-size:18px;line-height:24px;font-weight:600}
 .stub p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
-.price-recap{margin:16px 16px 0;padding:16px;background:#fff;border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1);border-radius:16px;display:flex;align-items:center;gap:12px}
-.price-recap div{flex:1;font-size:14px;line-height:20px;color:var(--muted)}
-.price-recap b{font-size:22px;line-height:28px;font-weight:700;color:var(--ink)}
 .note{display:flex;align-items:flex-start;gap:12px;margin:16px 16px 0;padding:12px 16px;background:var(--accent-ov);border-radius:12px}
 .note b{display:block;font-size:14px;line-height:20px;font-weight:600;color:var(--accent)}
 .note span{display:block;font-size:16px;line-height:22px}
@@ -369,8 +366,6 @@ function catalogScreen(){
     const r=calc(sp);
     if(S.stale&&r.free&&r.lim.t==='c'){
       h+=`<div class="note" role="status">${infoSvg('#344079')}<div><b>Лимит компании исчерпан</b><span>Стоимость консультации ${sp.w} сейчас — ${fmt(r.paid)}</span></div></div>`;
-    }else{
-      h+=`<div class="price-recap"><div>${S.money&&r.free?'Сейчас':'Стоимость сейчас'}<br><b>${S.money&&r.free?'Бесплатно':fmt(r.price)}</b></div></div>`;
     }
   }
   h+=`<div class="stub"><b>Существующий каталог</b><p>Открывается с выбранной специальностью. Дальше — существующий подбор специалиста и запись. В прототипе не реализовано.</p></div>`;
