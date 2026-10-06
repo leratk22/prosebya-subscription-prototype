@@ -8,21 +8,23 @@
 
 ## Состояния по ссылке
 
+Номера сценариев сквозные и совпадают с макетами в Paper (кроме 09: его в Paper нет). Старые ссылки вида `#s04` продолжают работать.
+
 Одна страница, состояние переключается панелью и записывается в адрес. Ссылку на конкретное состояние можно отправить:
 
 | Ссылка | Состояние |
 |---|---|
-| [`#s04`](https://leratk22.github.io/prosebya-subscription-prototype/#s04) | Лимит на компанию у трёх специальностей, у остальных скидки или полная цена |
-| [`#s04p`](https://leratk22.github.io/prosebya-subscription-prototype/#s04p) | То же, но лимит личный (на клиента) |
-| [`#s03`](https://leratk22.github.io/prosebya-subscription-prototype/#s03) | Лимит компании доступен, числа скрыты |
-| [`#s06`](https://leratk22.github.io/prosebya-subscription-prototype/#s06) | Лимит компании исчерпан |
-| [`#s05`](https://leratk22.github.io/prosebya-subscription-prototype/#s05) | Личный лимит исчерпан (подписка с личным лимитом) |
-| [`#s01`](https://leratk22.github.io/prosebya-subscription-prototype/#s01) | Только личные лимиты |
-| [`#s07`](https://leratk22.github.io/prosebya-subscription-prototype/#s07) | Только скидки |
-| [`#s08`](https://leratk22.github.io/prosebya-subscription-prototype/#s08) | Временная блокировка бесплатного доступа |
-| [`#s09`](https://leratk22.github.io/prosebya-subscription-prototype/#s09) | Постоянная блокировка |
-| [`#x01`](https://leratk22.github.io/prosebya-subscription-prototype/#x01) | Загрузка |
-| [`#x02`](https://leratk22.github.io/prosebya-subscription-prototype/#x02) | Ошибка загрузки |
+| [`#01`](https://leratk22.github.io/prosebya-subscription-prototype/#01) | Лимит на компанию у трёх специальностей, у остальных скидки или полная цена |
+| [`#02`](https://leratk22.github.io/prosebya-subscription-prototype/#02) | То же, но лимит личный (на клиента) |
+| [`#03`](https://leratk22.github.io/prosebya-subscription-prototype/#03) | Лимит компании доступен, числа скрыты |
+| [`#04`](https://leratk22.github.io/prosebya-subscription-prototype/#04) | Лимит компании исчерпан |
+| [`#05`](https://leratk22.github.io/prosebya-subscription-prototype/#05) | Личный лимит исчерпан (подписка с личным лимитом) |
+| [`#06`](https://leratk22.github.io/prosebya-subscription-prototype/#06) | Только скидки |
+| [`#07`](https://leratk22.github.io/prosebya-subscription-prototype/#07) | Временная блокировка бесплатного доступа |
+| [`#08`](https://leratk22.github.io/prosebya-subscription-prototype/#08) | Постоянная блокировка |
+| [`#09`](https://leratk22.github.io/prosebya-subscription-prototype/#09) | Только личные лимиты |
+| [`#10`](https://leratk22.github.io/prosebya-subscription-prototype/#10) | Загрузка |
+| [`#11`](https://leratk22.github.io/prosebya-subscription-prototype/#11) | Ошибка загрузки |
 
 В панели «Настроить вручную» состояния собираются из отдельных параметров: подписка, лимит компании, числа компании, личный лимит, блокировка, экран.
 
@@ -32,8 +34,8 @@
 
 | Ссылка | Что включено |
 |---|---|
-| [`#s04&money=1`](https://leratk22.github.io/prosebya-subscription-prototype/#s04&money=1) | «Мелкая цена» на подписке с лимитом компании |
-| [`#s06&money=1`](https://leratk22.github.io/prosebya-subscription-prototype/#s06&money=1) | «Мелкая цена», лимит компании исчерпан |
+| [`#01&money=1`](https://leratk22.github.io/prosebya-subscription-prototype/#01&money=1) | «Мелкая цена» на подписке с лимитом компании |
+| [`#04&money=1`](https://leratk22.github.io/prosebya-subscription-prototype/#04&money=1) | «Мелкая цена», лимит компании исчерпан |
 
 - **Мелкая цена** (`money=1`): у бесплатных карточек нет рублей. Название стоит вверху, а «Бесплатно» или цена — справа в нижней строке карточки. Цена после лимита перенесена в «Условия подписки». «Крупная цена» (по умолчанию) — цена справа от названия.
 - **Дата обновления лимитов** стоит в карточках специальностей с лимитом (обновляются только лимиты). У карточек с исчерпанным лимитом дата тоже есть, у заблокированных нет. В плашке программы её нет.
