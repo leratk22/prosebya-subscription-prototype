@@ -30,29 +30,26 @@
 
 ## Ссылки для телефона (без панели сценариев)
 
-Добавьте к любому адресу `&clean=1`: панель и кнопка «Сценарии» скроются, останется только экран.
+Добавьте к любому адресу `&clean=1`: панель и кнопка «Сценарии» скроются, останется только экран. По умолчанию открывается «Мелкая цена». Чтобы получить «Крупную цену», добавьте `&money=0`, например `#01&money=0&clean=1`.
 
-| Ссылка | Сценарий |
-|---|---|
-| [`#01&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#01&clean=1) | Лимит компании + скидки, крупная цена |
-| [`#01&money=1&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#01&money=1&clean=1) | То же, мелкая цена |
-| [`#03&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#03&clean=1) | Лимит компании, числа скрыты |
-| [`#04&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#04&clean=1) | Лимит компании исчерпан |
-| [`#07&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#07&clean=1) | Временная блокировка |
-| [`#08&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#08&clean=1) | Постоянная блокировка |
-| [`#06&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#06&clean=1) | Только скидки |
-| [`#11&clean=1`](https://leratk22.github.io/prosebya-subscription-prototype/#11&clean=1) | Ошибка загрузки (кнопка «Повторить» работает) |
+01 · Лимит компании + скидки — https://leratk22.github.io/prosebya-subscription-prototype/#01&clean=1
+02 · Личный лимит + скидки — https://leratk22.github.io/prosebya-subscription-prototype/#02&clean=1
+03 · Лимит компании, числа скрыты — https://leratk22.github.io/prosebya-subscription-prototype/#03&clean=1
+04 · Лимит компании исчерпан — https://leratk22.github.io/prosebya-subscription-prototype/#04&clean=1
+05 · Личный лимит исчерпан — https://leratk22.github.io/prosebya-subscription-prototype/#05&clean=1
+06 · Только скидки — https://leratk22.github.io/prosebya-subscription-prototype/#06&clean=1
+07 · Временная блокировка — https://leratk22.github.io/prosebya-subscription-prototype/#07&clean=1
+08 · Постоянная блокировка — https://leratk22.github.io/prosebya-subscription-prototype/#08&clean=1
+09 · Только личный лимит — https://leratk22.github.io/prosebya-subscription-prototype/#09&clean=1
+10 · Загрузка — https://leratk22.github.io/prosebya-subscription-prototype/#10&clean=1
+11 · Ошибка загрузки — https://leratk22.github.io/prosebya-subscription-prototype/#11&clean=1
 
 ## Настройка «Размер цены»
 
-Настройка в блоке «Настроить вручную». Работает поверх любого сценария и записывается в ссылку:
+Настройка в блоке «Настроить вручную». Работает поверх любого сценария и записывается в ссылку. По умолчанию включена «Мелкая цена» (`money=1`).
 
-| Ссылка | Что включено |
-|---|---|
-| [`#01&money=1`](https://leratk22.github.io/prosebya-subscription-prototype/#01&money=1) | «Мелкая цена» на подписке с лимитом компании |
-| [`#04&money=1`](https://leratk22.github.io/prosebya-subscription-prototype/#04&money=1) | «Мелкая цена», лимит компании исчерпан |
-
-- **Мелкая цена** (`money=1`): у бесплатных карточек нет рублей. Название стоит вверху, а «Бесплатно» или цена — справа в нижней строке карточки. Цена после лимита перенесена в «Условия подписки». «Крупная цена» (по умолчанию) — цена справа от названия.
+- **Мелкая цена** (`money=1`, по умолчанию): у бесплатных карточек нет рублей. Название стоит вверху, а «Бесплатно» или цена — справа в нижней строке карточки. Цена после лимита перенесена в «Условия подписки».
+- **Крупная цена** (`money=0`): цена справа от названия, «затем N ₽» внизу карточки. Например `#01&money=0`.
 - **Дата обновления лимитов** стоит в карточках специальностей с лимитом (обновляются только лимиты). У карточек с исчерпанным лимитом дата тоже есть, у заблокированных нет. В плашке программы её нет.
 - В подписке лимит либо на компанию, либо на клиента, но не оба сразу: на одном экране не встречаются «Личный лимит» и «Общий лимит компании» вместе.
 
