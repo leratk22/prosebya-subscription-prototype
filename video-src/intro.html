@@ -159,7 +159,7 @@ function camAt(t){
 }
 /* окно видимости подсветки: плавно появляется и гаснет */
 const win=(t,a,b,f=.25)=>clamp((t-a)/f)*clamp((b-t)/f);
-const SHOW_PINS=true;   // false — убрать цифры, останется только зум
+const SHOW_PINS=false;  // true — вернуть цифры 1–3 у элементов (сейчас только зум)
 function setT(t){
   const c=camAt(t);
   cam.style.transform=`translate(${c.tx}px,${c.ty}px) scale(${c.s})`;
