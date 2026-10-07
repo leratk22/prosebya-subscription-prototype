@@ -46,17 +46,12 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 
 /* ---------- карточка программы ---------- */
 .section{padding:8px 16px 0}
-.program{background:var(--ink);color:#fff;border-radius:16px;position:relative}
-.program.skel{background:#fff;color:var(--ink);border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1)}
-.program-head{display:flex;align-items:center;gap:8px;padding:16px 56px 16px 16px}
-.program-head{width:100%}
-.program-head>span:first-child{flex:1;display:block}
-.program-head>span:first-child>b{display:block}
-.program-head .info{position:absolute;right:4px;top:6px;width:44px;height:44px;display:flex;align-items:center;justify-content:center}
-button.program{display:block;width:100%;border:0;padding:0;text-align:left;font:inherit}
-button.program:active{background:#2c3047}
-.program-head b{display:block;font-size:16px;line-height:24px;font-weight:600}
-.program-head>span:first-child>span{display:block;margin-top:2px;font-size:12px;line-height:16px;color:rgba(255,255,255,.8)}
+.program{position:relative;display:flex;align-items:center;gap:12px;width:100%;padding:16px;background:var(--surface);border:0;border-radius:16px;box-shadow:0 6px 10px -4px rgba(34,38,59,.1);color:var(--ink);text-align:left;font:inherit}
+button.program:active{background:#ECEFF6}
+.program-media{flex:0 0 80px;width:80px;height:80px;overflow:hidden}
+.program-media img{display:block;width:80px;height:80px;object-fit:cover}
+.program-text{flex:1;min-width:0;padding-right:24px;font-size:14px;line-height:20px;font-weight:500}
+.program .info{position:absolute;top:0;right:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 .hr{height:1px;background:var(--line)}
 .pad-h{padding:0 16px}
 .block{display:flex;align-items:center;gap:12px;margin:8px 16px 0;padding:12px 56px 12px 16px;min-height:44px;background:var(--negative-ov);border-radius:16px;position:relative}
@@ -137,9 +132,7 @@ button.program:active{background:#2c3047}
 .sk-top{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px 8px}
 .sk-foot{display:flex;flex-direction:column;gap:12px;padding:12px 16px;border-top:1px solid var(--line)}
 .sk-row{display:flex;align-items:center;gap:12px}
-.program.skel-dark{padding:16px}
 .sk{background:rgba(34,38,59,.07)}
-.sk.dark{background:rgba(255,255,255,.16)}
 .errcard{margin:24px 16px 0;padding:24px 16px 16px;background:#fff;border:1px solid rgba(52,64,121,.14);box-shadow:0 6px 10px -4px rgba(34,38,59,.1);border-radius:16px;display:flex;flex-direction:column;gap:16px}
 .errcard h2{margin:0;font-size:18px;line-height:24px;font-weight:600}
 .errcard p{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
@@ -312,7 +305,7 @@ function appbar(title,back){
   return `<header class="appbar"><button class="iconbtn" data-act="${back?'back':'noop'}" aria-label="Назад">${backSvg}</button><h1>${title}</h1><span></span></header>`;
 }
 function program(){
-  return `<button type="button" class="program" data-act="terms" aria-label="Условия подписки. Действует до 31 декабря 2026"><span class="program-head"><span><b>Условия подписки</b><span>Действует до 31 декабря 2026</span></span><span class="info" aria-hidden="true">${infoSvg('#FFFFFF99')}</span></span></button>`;
+  return `<button type="button" class="program" data-act="terms" aria-label="Условия подписки. Действует до 31 декабря 2026"><span class="program-media"><img src="img/time-slot.png" alt="" width="80" height="80"></span><span class="program-text">Условия подписки: действует до 31 декабря 2026</span><span class="info" aria-hidden="true">${infoSvg('rgba(34,38,59,.4)')}</span></button>`;
 }
 function blockCard(){
   const blocked=hasLimits(S.config)&&S.block!=='none';
@@ -351,7 +344,7 @@ function loadingScreen(){
   const lim=top+'<div class="sk-foot"><div class="sk" style="width:210px;height:12px"></div><div class="sk" style="height:6px;border-radius:3px"></div><div class="sk-row"><div class="sk" style="width:70px;height:14px"></div><div class="sk" style="width:88px;height:20px;border-radius:10px;margin-left:auto"></div></div></div>';
   const one=top+'<div class="sk-foot"><div class="sk-row"><div class="sk" style="width:150px;height:14px"></div><div class="sk" style="width:64px;height:20px;border-radius:10px;margin-left:auto"></div></div></div>';
   const c=h=>`<div class="sk-card">${h}</div>`;
-  return appbar('Моя подписка',false)+`<div class="section"><div class="program skel-dark"><div class="sk dark" style="width:150px;height:16px"></div><div class="sk dark" style="width:190px;height:12px;margin-top:8px"></div></div></div><div class="heading"><div class="sk" style="width:240px;height:26px"></div></div><div class="cards" role="status" aria-label="Загружаем стоимость консультаций">${c(lim)+c(lim)+c(lim)+c(one)+c(one)+c(one)}</div>`;
+  return appbar('Моя подписка',false)+`<div class="section"><div class="program"><div class="sk" style="flex:0 0 80px;width:80px;height:80px;border-radius:12px"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-right:24px"><div class="sk" style="height:14px"></div><div class="sk" style="width:70%;height:14px"></div></div></div></div><div class="heading"><div class="sk" style="width:240px;height:26px"></div></div><div class="cards" role="status" aria-label="Загружаем стоимость консультаций">${c(lim)+c(lim)+c(lim)+c(one)+c(one)+c(one)}</div>`;
 }
 function errorScreen(){
   return appbar('Моя подписка',false)+`<div class="errcard" role="alert"><div><h2>Не удалось загрузить стоимость консультаций</h2><p>Проверьте соединение и попробуйте ещё раз. Цену мы покажем только после загрузки.</p></div><button class="btn" data-act="retry">Повторить</button><button class="btn tertiary" data-act="catalog-any">Открыть каталог</button></div>`;
