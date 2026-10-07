@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<title>Видео приветствия · источник</title>
+<style>
+/*CSS*/
+html,body{margin:0;background:#EAEFF8}
+body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+#cv{position:relative;width:343px;height:256px;overflow:hidden;background:#EAEFF8}
+#cam{position:absolute;left:0;top:0;width:375px;transform-origin:0 0;will-change:transform}
+#cam .section{padding:16px 16px 0}
+.h2{padding:20px 16px 12px;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.015em}
+.cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}
+.ring{position:absolute;border:2px solid var(--accent);opacity:0;pointer-events:none}
+.ripple{position:absolute;border-radius:50%;background:rgba(52,64,121,.35);opacity:0;pointer-events:none}
+.pin{position:absolute;z-index:3;width:24px;height:24px;border-radius:12px;background:var(--accent);box-shadow:0 0 0 2px #fff;color:#fff;font:600 13px/24px var(--font);text-align:center;opacity:0}
+</style></head>
+<body>
+<div id="cv"><div id="cam"></div><div class="pin" id="pin">1</div></div>
+<script>
+/*DATA*/
+const $=s=>document.querySelector(s);
+const ico=n=>{const sp=SPECS.find(x=>x.name===n);return `<span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079"><path d="${ICONS[sp.id]}"/></svg></span>`};
+const card=(n,foot)=>`<article class="card"><div class="card-main"><div class="card-top">${ico(n)}<span class="card-name">${n}</span>${chev}</div></div>${foot}</article>`;
+const limFoot=(own,left,total)=>`<div class="foot lim"><div class="grp"><div class="ownrow"><span>${own}</span><i></i><span>Обновится 1 ноября</span></div><div class="bar" id="bar"><i id="barfill" style="--w:${Math.round(left/total*100)}%;animation:none;width:${Math.round(left/total*100)}%"></i></div></div><div class="foot-row"><b>${left} из ${total}</b><b class="foot-free">${eyeSvg}Бесплатно</b></div></div>`;
+const priceFoot=(txt,price,id)=>`<div class="foot"><div class="foot-row"><b>${txt}</b><b class="foot-price" ${id?`id="${id}"`:''}>${price}</b></div></div>`;
+$('#cam').innerHTML=
+ `<div class="section"><div class="program"><span class="program-media"><img src="../img/time-slot.png" alt="" width="80" height="80"></span><span class="program-text">Условия подписки: действует до 31 декабря 2026</span><span class="info" id="info">${infoSvg('rgba(34,38,59,.4)')}</span></div></div>`+
+ `<div class="h2">Стоимость консультаций</div><div class="cards">`+
+ card('Психолог',limFoot('Личный лимит',2,3))+card('Коуч',limFoot('Личный лимит',1,3).replace(/id="bar"|id="barfill"/g,''))+
+ card('Юрист',priceFoot('Скидка 10% по подписке','2 700 ₽','chip'))+card('Нутрициолог',priceFoot('Полная стоимость','3 000 ₽'))+`</div>`+
+ `<div class="ring" id="r1"></div><div class="ring" id="r2"></div><div class="ring" id="r3"></div><div class="ripple" id="rip"></div>`;
+
+const cam=$('#cam'),W=343,H=256;
+const rel=el=>{const a=el.getBoundingClientRect(),b=cam.getBoundingClientRect();return {x:a.left-b.left,y:a.top-b.top,w:a.width,h:a.height}};
+let T={};
+function measure(){
+  cam.style.transform='none';
+  const i=rel($('#info')),b=rel($('#bar')),c=rel($('#chip'));
+  T={i:{cx:i.x+i.w/2,cy:i.y+i.h/2},b:{x:b.x,y:b.y,w:b.w,h:b.h,cx:b.x+b.w/2,cy:b.y+b.h/2},c:{x:c.x,y:c.y,w:c.w,h:c.h,cx:c.x+c.w/2,cy:c.y+c.h/2}};
+  const ring=(id,x,y,w,h,r,p)=>{const e=$(id);Object.assign(e.style,{left:(x-p)+'px',top:(y-p)+'px',width:(w+2*p)+'px',height:(h+2*p)+'px',borderRadius:r+'px'})};
+  ring('#r1',T.i.cx-13,T.i.cy-13,26,26,13,0);
+  ring('#r2',T.b.x,T.b.y,T.b.w,T.b.h,6,5);
+  ring('#r3',T.c.x,T.c.y,T.c.w,T.c.h,100,4);
+  const rp=$('#rip');Object.assign(rp.style,{left:T.i.cx+'px',top:T.i.cy+'px'});
+}
+const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+const lerp=(a,b,k)=>a+(b-a)*k;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+/* ключевые кадры камеры: t, масштаб, точка страницы P и её положение на экране S */
+let K;
+function keys(){
+  K=[
+   {t:0.0,s:.78,P:[187,175],S:[171.5,128]},
+   {t:0.5,s:.78,P:[187,175],S:[171.5,128]},
+   {t:1.5,s:1.45,P:[T.i.cx-20,T.i.cy+22],S:[190,110]},
+   {t:3.0,s:1.45,P:[T.i.cx-20,T.i.cy+22],S:[190,110]},
+   {t:4.0,s:1.0,P:[T.b.cx,T.b.cy-8],S:[171.5,118]},
+   {t:5.6,s:1.0,P:[T.b.cx,T.b.cy-8],S:[171.5,118]},
+   {t:6.6,s:1.7,P:[T.c.cx-30,T.c.cy],S:[205,120]},
+   {t:8.0,s:1.7,P:[T.c.cx-30,T.c.cy],S:[205,120]},
+   {t:9.1,s:.78,P:[187,175],S:[171.5,128]},
+   {t:9.5,s:.78,P:[187,175],S:[171.5,128]}
+  ];
+}
+const END=9.5;
+function camAt(t){
+  let a=K[0],b=K[K.length-1];
+  for(let k=0;k<K.length-1;k++){if(t>=K[k].t&&t<=K[k+1].t){a=K[k];b=K[k+1];break}}
+  const u=b.t===a.t?1:ease(clamp((t-a.t)/(b.t-a.t)));
+  const s=lerp(a.s,b.s,u),P=[lerp(a.P[0],b.P[0],u),lerp(a.P[1],b.P[1],u)],S=[lerp(a.S[0],b.S[0],u),lerp(a.S[1],b.S[1],u)];
+  return {s,tx:S[0]-s*P[0],ty:S[1]-s*P[1]};
+}
+/* окно видимости подсветки: плавно появляется и гаснет */
+const win=(t,a,b,f=.25)=>clamp((t-a)/f)*clamp((b-t)/f);
+function setT(t){
+  const c=camAt(t);
+  cam.style.transform=`translate(${c.tx}px,${c.ty}px) scale(${c.s})`;
+  const bw=2/c.s;
+  const items=[['#r1',1.5,3.0,'tl'],['#r2',4.0,5.7,'tr'],['#r3',6.6,8.1,'tl']];
+  let pin=null;
+  items.forEach(([id,a,b,mode],k)=>{
+    const e=$(id),o=win(t,a+.15,b,.3);
+    // пульс: кольцо чуть «дышит»
+    const pulse=1+.05*Math.sin((t-a)*6);
+    e.style.opacity=o;e.style.borderWidth=bw+'px';e.style.transform=`scale(${pulse})`;e.style.transformOrigin='center';
+    if(o>0.01) pin={k:k+1,o,mode,x:parseFloat(e.style.left),y:parseFloat(e.style.top),w:parseFloat(e.style.width)};
+  });
+  // тап по «i»
+  const rp=$('#rip'),rt=clamp((t-2.0)/.7);
+  rp.style.opacity=rt>0&&rt<1?.35*(1-rt):0;
+  const rr=(6+16*rt);rp.style.width=rp.style.height=(2*rr)+'px';rp.style.marginLeft=rp.style.marginTop=(-rr)+'px';
+  // шкала заполняется заново при появлении
+  const f=$('#barfill');if(f){const full=parseFloat(f.style.getPropertyValue('--w'));f.style.width=(full*ease(clamp((t-4.1)/.9)))+'%'; if(t<4.0) f.style.width=full+'%'}
+  // номер у подсветки: левый верхний угол кольца в экранных координатах
+  const p=$('#pin');
+  if(pin){
+    p.textContent=pin.k;
+    let sx=c.tx+c.s*(pin.mode==='tr'?pin.x+pin.w:pin.x)-(pin.mode==='tr'?16:8),sy=c.ty+c.s*pin.y-12;
+    sx=clamp(sx,8,W-32);sy=clamp(sy,8,H-32);
+    Object.assign(p.style,{left:sx+'px',top:sy+'px',opacity:pin.o});
+  }else p.style.opacity=0;
+}
+window.setT=setT;window.END=END;
+document.fonts.ready.then(()=>{
+  measure();keys();setT(0);window.READY=true;
+  if(!/[?&]frames/.test(location.search)){
+    const t0=performance.now();
+    (function loop(){setT(((performance.now()-t0)/1000)%END);requestAnimationFrame(loop)})();
+  }
+});
+</script></body></html>
