@@ -141,6 +141,41 @@ button.program:active{background:#ECEFF6}
 .errstate .retry{display:flex;align-items:center;justify-content:center;height:48px;padding:12px 16px;border:1px solid rgba(52,64,121,.2);border-radius:999px;background:none;color:var(--accent);font:inherit;font-size:16px;line-height:24px;font-weight:600}
 .errstate .retry:active{background:rgba(52,64,121,.06)}
 
+/* ONBOARDING:start — приветственный поп-ап (3 слайда). Чтобы убрать: удалить блоки ONBOARDING в CSS и JS и три строки JS с пометкой ONB */
+.intro{margin:-24px -24px -20px;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.onb-media{position:relative;flex:0 0 auto;height:268px;background:var(--soft);overflow:hidden;cursor:pointer}
+.onb-slide{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;padding:20px 16px 0;opacity:0;transform:translateX(16px);transition:opacity .35s,transform .35s;pointer-events:none;-webkit-mask-image:linear-gradient(#000 72%,transparent);mask-image:linear-gradient(#000 72%,transparent)}
+.onb-slide.on{opacity:1;transform:none}
+.onb-slide .program{pointer-events:none}
+.onb-h{padding:12px 0 0;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.015em}
+.onb-slide .hl{position:relative}
+.onb-slide .info.hl{position:absolute}
+.onb-slide .hl::after{content:"";position:absolute;inset:-5px;border:2px solid var(--accent);border-radius:999px;opacity:0}
+.onb-slide .bar.hl::after{inset:-6px -4px;border-radius:6px}
+.onb-slide .info.hl::after{inset:11px}
+.onb-slide.on .hl::after{animation:onbSoft 1.6s ease-out .6s infinite}
+.onb-slide.on .info.hl::after{animation-name:onbRing}
+@keyframes onbRing{0%{opacity:0;transform:scale(.8)}25%{opacity:1}100%{opacity:0;transform:scale(1.35)}}
+@keyframes onbSoft{0%{opacity:0;transform:scale(.97)}30%{opacity:1}100%{opacity:0;transform:scale(1.07)}}
+.onb-slide:not(.on) .bar i{width:0}
+.onb-slide.on .bar i{animation:fill .9s cubic-bezier(.22,.8,.2,1) .3s both}
+.onb-body{padding:20px 24px 20px}
+.onb-texts{display:grid}
+.onb-t{grid-area:1/1;opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.onb-t.on{opacity:1;visibility:visible;transition:opacity .3s}
+.onb-t h3{margin:0;font-size:20px;line-height:24px;font-weight:600;letter-spacing:-.01em}
+.onb-t p{margin:8px 0 0;font-size:16px;line-height:22px;color:rgba(34,38,59,.8)}
+.onb-dots{display:flex;justify-content:center;padding:12px 0 16px}
+.dot{display:flex;align-items:center;justify-content:center;width:20px;height:24px;border:0;background:none;padding:0}
+.dot i{display:block;position:relative;width:8px;height:8px;border-radius:4px;background:rgba(34,38,59,.15);overflow:hidden;transition:width .3s}
+.dot i::after{content:"";position:absolute;inset:0;background:var(--accent);transform-origin:left;transform:scaleX(0)}
+.dot.on i{width:24px}
+.dot.on i::after{animation:onbProg var(--ms,4500ms) linear forwards}
+@keyframes onbProg{to{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){.dot.on i::after{transform:none}}
+.onb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* ONBOARDING:end */
+
 /* ---------- панель сценариев ---------- */
 .panel{flex:0 0 340px;width:340px;max-height:calc(100vh - 48px);overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 8px 30px rgba(20,24,50,.12)}
 .panel h2{margin:0 0 4px;font-size:18px;line-height:24px;font-weight:600}
@@ -315,7 +350,7 @@ function blockCard(){
   const blocked=hasLimits(S.config)&&S.block!=='none';
   if(!blocked) return '';
   const temp=S.block==='temp';
-  return `<div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>${temp?'Скидки и платная запись доступны':'Скидки и платная запись сохраняются'}</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
+  return `<div class="block"><div><b>${temp?'Бесплатные консультации заблокированы до 20 октября':'Бесплатные консультации заблокированы'}</b><span>Скидки сохраняются, записаться можно</span></div><button class="iconbtn" data-act="reasons" aria-label="Причины блокировки">${infoSvg('#F15D56')}</button></div>`;
 }
 const eyeSvg='<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="5.666" cy="8" r="4" fill="#344079" fill-opacity=".15"/><path d="M9.666 8a4 4 0 1 1-8 0a4 4 0 0 1 8 0ZM10.281 12C11.439 12 12.577 11.498 13.359 10.557C14.591 9.075 14.591 6.925 13.359 5.443C12.577 4.502 11.439 4 10.281 4M6.778 7.333L5.25 8.862L4.333 7.945" fill="none" stroke="#344079" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function footer(r,n){
@@ -364,22 +399,23 @@ function catalogScreen(){
   return h;
 }
 function sheetHTML(kind){
+  if(kind==='intro') return ONB.html(); /*ONB*/
   if(kind==='terms'){
     const lim=hasLimits(S.config);
-    const rows=[['Срок','Действует до 31 декабря 2026'],['Цены','Платные цены по подписке зафиксированы при подключении']];
-    if(lim) rows.push(['Лимиты','Бесплатные лимиты обновляются по календарным месяцам. Следующее обновление — 1 ноября. '+(hasLimits(S.config,'c')?'Лимит один на всю компанию: его расходуют все сотрудники':'Лимит личный: у каждого сотрудника свой')]);
+    const rows=[['Срок действия','До 31 декабря 2026'],['Цены','Цены на консультации зафиксированы при подключении подписки']];
+    if(lim) rows.push(['Бесплатные консультации','Лимит обновляется в начале каждого месяца, ближайшее обновление — 1 ноября. '+(hasLimits(S.config,'c')?'Лимит общий: его делят все сотрудники компании':'Лимит личный: у каждого сотрудника свой')]);
     if(lim&&S.money){
       const after=SPECS.map(calc).filter(r=>r.lim).map(r=>`${r.spec.name} — ${fmt(r.paid)}${r.disc?` (скидка ${r.disc}%)`:''}`);
-      rows.push(['Цена после бесплатного лимита',after.join('<br>')]);
+      rows.push(['Цена после лимита',after.join('<br>')]);
     }
-    rows.push([lim?'Когда лимит исчерпан':'Стоимость','Можно записаться по платной цене вашей подписки: для одних специальностей действует скидка, для других — полная стоимость']);
-    if(lim) rows.push(['Блокировка','Блокировка бесплатного доступа не отменяет скидки и возможность платной записи']);
+    rows.push([lim?'Когда лимит закончился':'Скидки',(lim?'Записаться можно и после лимита. ':'')+'На одни специальности действует скидка, на другие — полная стоимость']);
+    if(lim) rows.push(['Блокировка','Блокировка касается только бесплатных консультаций. Скидки и запись по цене из списка сохраняются']);
     return `<div class="sheet-head"><h3 id="sheetTitle">Условия подписки</h3><button class="dlg-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${rows.map(r=>`<div><small>${r[0]}</small><p>${r[1]}</p></div>`).join('')}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
   }
   const temp=S.block==='temp';
   return `<div class="sheet-head"><h3 id="sheetTitle">Об ограничении</h3><button class="dlg-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${temp
-   ?'<p><b>Бесплатные консультации заблокированы до 20 октября</b></p><p>Скидки по подписке сохраняются. Вы можете выбрать специалиста и записаться по цене, указанной в списке</p><p>После снятия блокировки бесплатная запись будет зависеть от доступных лимитов</p>'
-   :'<p><b>Бесплатные консультации заблокированы</b></p><p>Бесплатный доступ по этой подписке не восстановится. Платная запись и скидки сохраняются</p>'}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
+   ?'<p><b>Бесплатные консультации заблокированы до 20 октября</b></p><p>Скидки сохраняются: выбирайте специалиста и записывайтесь по цене из списка</p><p>После 20 октября бесплатная запись снова станет доступна, если останется лимит</p>'
+   :'<p><b>Бесплатные консультации заблокированы</b></p><p>Бесплатная запись по этой подписке больше недоступна</p><p>Скидки сохраняются: записаться можно по цене из списка</p>'}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
 }
 
 /* ---------------- рендер ---------------- */
@@ -411,6 +447,7 @@ function renderPanel(){
    seg('persOut',{title:'Личный лимит',list:[[0,'Есть остаток'],[1,'Исчерпан']]},!pers,'В этой подписке нет личных лимитов')+
    seg('block',{title:'Блокировка бесплатного доступа',list:[['none','Нет'],['temp','Временная'],['perm','Постоянная']]},!lim,'Блокировка затрагивает только бесплатные консультации')+
    seg('screen',{title:'Экран',list:[['ok','Обычный'],['loading','Загрузка'],['error','Ошибка']]})+
+   ONB.panelBtn()+ /*ONB*/
    seg('money',{title:'Размер цены',list:[[0,'Крупная цена'],[1,'Мелкая цена']]})+
    `<div class="hint" style="margin:-6px 0 12px">«Мелкая цена»: у бесплатных карточек нет рублей, а «Бесплатно» и цена стоят внизу карточки; цена после лимита — в «Условиях подписки».</div>`+
    '';
@@ -456,6 +493,61 @@ function closeSheet(){
   if(lastFocus&&document.contains(lastFocus)) lastFocus.focus();
 }
 
+/* ONBOARDING:start — приветственный поп-ап: три слайда, листаются сами, показывается один раз на устройстве.
+   В ссылку можно добавить &intro=1 (показать всегда) или &intro=0 (не показывать) */
+const ONB=(()=>{
+  const KEY='prosebya.subscription.intro',MS=4500;
+  const force=(/[#&]intro=(\d)/.exec(location.hash)||[])[1];
+  const reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
+  let i=0,timer=null;
+  const seen=()=>{try{return localStorage.getItem(KEY)==='1'}catch(e){return false}};
+  const mark=()=>{try{localStorage.setItem(KEY,'1')}catch(e){}};
+  const SLIDES=[
+    {t:'Условия подписки',p:'Срок действия и правила — в баннере вверху. Нажмите на него или на значок i'},
+    {t:'Бесплатные консультации',p:'Шкала показывает, сколько консультаций осталось. Лимит обновляется раз в месяц'},
+    {t:'Цена консультации',p:'Справа — стоимость по вашей подписке, скидка уже учтена'}
+  ];
+  const ico=n=>{const sp=SPECS.find(x=>x.name===n);return `<span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079" aria-hidden="true"><path d="${ICONS[sp.id]}"/></svg></span>`};
+  const card=(n,foot)=>`<article class="card"><div class="card-main"><div class="card-top">${ico(n)}<span class="card-name">${n}</span>${chev}</div></div>${foot}</article>`;
+  const limFoot=(own,left,total,hl)=>`<div class="foot lim"><div class="grp"><div class="ownrow"><span>${own}</span><i></i><span>Обновится 1 ноября</span></div><div class="bar${hl?' hl':''}"><i style="--w:${Math.round(left/total*100)}%"></i></div></div><div class="foot-row"><b>${left} из ${total}</b><b class="foot-free">${eyeSvg}Бесплатно</b></div></div>`;
+  const priceFoot=(txt,price,hl)=>`<div class="foot"><div class="foot-row"><b>${txt}</b><b class="foot-price${hl?' hl':''}">${price}</b></div></div>`;
+  const banner=`<div class="program"><span class="program-media"><img src="img/time-slot.png" alt="" width="80" height="80"></span><span class="program-text">Условия подписки: действует до 31 декабря 2026</span><span class="info hl">${infoSvg('rgba(34,38,59,.4)')}</span></div>`;
+  const media=[
+    banner+'<div class="onb-h">Стоимость консультаций</div>'+card('Психолог',limFoot('Личный лимит',2,3)),
+    card('Психолог',limFoot('Личный лимит',2,3,true))+card('Коуч',limFoot('Личный лимит',1,3)),
+    card('Юрист',priceFoot('Скидка 10% по подписке','2 700 ₽',true))+card('Нутрициолог',priceFoot('Полная стоимость','3 000 ₽'))
+  ];
+  function go(n,manual){
+    i=n;clearTimeout(timer);
+    const r=document.querySelector('#sheet .intro');
+    if(!r) return;
+    ['.onb-slide','.onb-t','.dot'].forEach(sel=>r.querySelectorAll(sel).forEach((el,k)=>el.classList.toggle('on',k===n)));
+    void r.offsetWidth;
+    if(!reduce) timer=setTimeout(()=>{if(sheetKind==='intro') go((i+1)%SLIDES.length)},MS);
+  }
+  function html(){
+    const on=k=>k===i?' on':'';
+    return `<div class="intro" role="group" aria-roledescription="карусель" style="--ms:${MS}ms"><span class="onb-sr" id="sheetTitle">Как устроен раздел</span>`+
+      `<div class="onb-media" data-onb-next aria-hidden="true">${media.map((m,k)=>`<div class="onb-slide${on(k)}">${m}</div>`).join('')}</div>`+
+      `<div class="onb-body"><div class="onb-texts" aria-live="polite">${SLIDES.map((x,k)=>`<div class="onb-t${on(k)}"><h3>${x.t}</h3><p>${x.p}</p></div>`).join('')}</div>`+
+      `<div class="onb-dots">${SLIDES.map((x,k)=>`<button type="button" class="dot${on(k)}" data-onb-go="${k}" aria-label="Шаг ${k+1} из ${SLIDES.length}"><i></i></button>`).join('')}</div>`+
+      `<button class="btn" data-act="close-sheet">Понятно</button></div></div>`;
+  }
+  function show(){i=0;openSheet('intro',document.activeElement);go(0);mark()}
+  document.addEventListener('click',e=>{
+    const g=e.target.closest('[data-onb-go]');
+    if(g){go(Number(g.dataset.onbGo));return}
+    if(e.target.closest('[data-onb-next]')){go((i+1)%SLIDES.length);return}
+    if(e.target.closest('[data-onb-show]')){document.body.classList.remove('drawer');show()}
+  });
+  return {
+    html,
+    init(){if(force==='0') return;if(force==='1'||!seen()) setTimeout(show,500)},
+    panelBtn(){return `<button type="button" class="copy" data-onb-show style="margin-top:4px">Показать приветствие</button><div class="hint" style="margin:6px 0 12px">Поп-ап первого входа: появляется один раз на устройстве. В ссылке: <code>&amp;intro=0</code> — пропустить, <code>&amp;intro=1</code> — показать всегда.</div>`}
+  };
+})();
+/* ONBOARDING:end */
+
 /* ---------------- события ---------------- */
 document.addEventListener('click',e=>{
   const pr=e.target.closest('[data-preset]');
@@ -499,6 +591,7 @@ window.addEventListener('hashchange',()=>{readHash();view={name:'main',spec:null
 
 readHash();
 render();
+ONB.init(); /*ONB*/
 })();
 </script>
 </body>
