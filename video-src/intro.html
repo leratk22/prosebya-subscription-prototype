@@ -86,7 +86,7 @@ body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased
 .pin{position:absolute;z-index:3;width:24px;height:24px;border-radius:12px;background:var(--accent);box-shadow:0 0 0 2px #fff;color:#fff;font:600 13px/24px var(--font);text-align:center;opacity:0}
 </style></head>
 <body>
-<div id="cv"><div id="cam"></div><div class="pin" id="pin">1</div></div>
+<div id="cv"><div id="cam"></div><div class="pin" id="pin0">1</div><div class="pin" id="pin1">2</div><div class="pin" id="pin2">3</div></div>
 <script>
 const ICONS={
  psy:'M19.25 36C18.425 36 17.7188 35.7062 17.1315 35.1185C16.5438 34.5312 16.25 33.825 16.25 33V29.65C14.271 28.316 12.7345 26.6058 11.6405 24.5195C10.5468 22.4332 10 20.21 10 17.85C10 13.9917 11.3667 10.7188 14.1 8.0315C16.8333 5.34383 20.1417 4 24.025 4C27.9083 4 31.2083 5.35833 33.925 8.075C36.6417 10.7917 38 14.1 38 18C38 20.3667 37.45 22.575 36.35 24.625C35.25 26.675 33.7167 28.35 31.75 29.65V33C31.75 33.825 31.4563 34.5312 30.869 35.1185C30.2813 35.7062 29.575 36 28.75 36H19.25ZM19.5 33H28.5V28.3L30.3 27.05C31.7937 26.0183 32.9505 24.7012 33.7705 23.0985C34.5902 21.4958 35 19.792 35 17.987C35 14.929 33.9333 12.3333 31.8 10.2C29.6667 8.06667 27.0667 7 24 7C20.9333 7 18.3333 8.07683 16.2 10.2305C14.0667 12.3842 13 14.9887 13 18.044C13 19.848 13.4098 21.5443 14.2295 23.133C15.0495 24.7217 16.2063 26.0273 17.7 27.05L19.5 28.281V33ZM19.85 44C19.425 44 19.0688 43.8562 18.7815 43.5685C18.4938 43.2812 18.35 42.925 18.35 42.5V41H29.7V42.509C29.7 42.9363 29.5563 43.2917 29.269 43.575C28.9813 43.8583 28.625 44 28.2 44H19.85Z',
@@ -118,7 +118,7 @@ $('#cam').innerHTML=
  `<div class="h2">Стоимость консультаций</div><div class="cards">`+
  card('Психолог',limFoot('Личный лимит',2,3))+card('Коуч',limFoot('Личный лимит',1,3).replace(/id="bar"|id="barfill"/g,''))+
  card('Юрист',priceFoot('Скидка 10% по подписке','2 700 ₽','chip'))+card('Нутрициолог',priceFoot('Полная стоимость','3 000 ₽'))+`</div>`+
- `<div class="ring" id="r1"></div><div class="ring" id="r2"></div><div class="ring" id="r3"></div><div class="ripple" id="rip"></div>`;
+ `<div class="ripple" id="rip"></div>`;
 
 const cam=$('#cam'),W=343,H=256;
 const rel=el=>{const a=el.getBoundingClientRect(),b=cam.getBoundingClientRect();return {x:a.left-b.left,y:a.top-b.top,w:a.width,h:a.height}};
@@ -127,12 +127,9 @@ function measure(){
   cam.style.transform='none';
   const i=rel($('#info')),b=rel($('#bar')),c=rel($('#chip'));
   T={i:{cx:i.x+i.w/2,cy:i.y+i.h/2},b:{x:b.x,y:b.y,w:b.w,h:b.h,cx:b.x+b.w/2,cy:b.y+b.h/2},c:{x:c.x,y:c.y,w:c.w,h:c.h,cx:c.x+c.w/2,cy:c.y+c.h/2}};
-  const ring=(id,x,y,w,h,r,p)=>{const e=$(id);Object.assign(e.style,{left:(x-p)+'px',top:(y-p)+'px',width:(w+2*p)+'px',height:(h+2*p)+'px',borderRadius:r+'px'})};
-  ring('#r1',T.i.cx-13,T.i.cy-13,26,26,13,0);
-  ring('#r2',T.b.x,T.b.y,T.b.w,T.b.h,6,5);
-  ring('#r3',T.c.x,T.c.y,T.c.w,T.c.h,100,4);
   const rp=$('#rip');Object.assign(rp.style,{left:T.i.cx+'px',top:T.i.cy+'px'});
 }
+let PINS=[];
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const lerp=(a,b,k)=>a+(b-a)*k;
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
@@ -162,37 +159,27 @@ function camAt(t){
 }
 /* окно видимости подсветки: плавно появляется и гаснет */
 const win=(t,a,b,f=.25)=>clamp((t-a)/f)*clamp((b-t)/f);
+const SHOW_PINS=true;   // false — убрать цифры, останется только зум
 function setT(t){
   const c=camAt(t);
   cam.style.transform=`translate(${c.tx}px,${c.ty}px) scale(${c.s})`;
-  const bw=2/c.s;
-  const items=[['#r1',1.5,3.0,'tl'],['#r2',4.0,5.7,'tr'],['#r3',6.6,8.1,'tl']];
-  let pin=null;
-  items.forEach(([id,a,b,mode],k)=>{
-    const e=$(id),o=win(t,a+.15,b,.3);
-    // пульс: кольцо чуть «дышит»
-    const pulse=1+.05*Math.sin((t-a)*6);
-    e.style.opacity=o;e.style.borderWidth=bw+'px';e.style.transform=`scale(${pulse})`;e.style.transformOrigin='center';
-    if(o>0.01) pin={k:k+1,o,mode,x:parseFloat(e.style.left),y:parseFloat(e.style.top),w:parseFloat(e.style.width)};
-  });
   // тап по «i»
   const rp=$('#rip'),rt=clamp((t-2.0)/.7);
   rp.style.opacity=rt>0&&rt<1?.35*(1-rt):0;
   const rr=(6+16*rt);rp.style.width=rp.style.height=(2*rr)+'px';rp.style.marginLeft=rp.style.marginTop=(-rr)+'px';
   // шкала заполняется заново при появлении
-  const f=$('#barfill');if(f){const full=parseFloat(f.style.getPropertyValue('--w'));f.style.width=(full*ease(clamp((t-4.1)/.9)))+'%'; if(t<4.0) f.style.width=full+'%'}
-  // номер у подсветки: левый верхний угол кольца в экранных координатах
-  const p=$('#pin');
-  if(pin){
-    p.textContent=pin.k;
-    let sx=c.tx+c.s*(pin.mode==='tr'?pin.x+pin.w:pin.x)-(pin.mode==='tr'?16:8),sy=c.ty+c.s*pin.y-12;
-    sx=clamp(sx,8,W-32);sy=clamp(sy,8,H-32);
-    Object.assign(p.style,{left:sx+'px',top:sy+'px',opacity:pin.o});
-  }else p.style.opacity=0;
+  const f=$('#barfill');if(f){const full=parseFloat(f.style.getPropertyValue('--w'));f.style.width=(t<4.0?full:full*ease(clamp((t-4.1)/.9)))+'%'}
+  // цифры: стоят у своих элементов и едут вместе с камерой, плавно появляются и гаснут
+  PINS.forEach((p,k)=>{
+    const el=$('#pin'+k),o=SHOW_PINS?win(t,p.a,p.b,.35):0;
+    el.style.opacity=o;
+    el.style.left=(c.tx+c.s*p.x()-12)+'px';el.style.top=(c.ty+c.s*p.y()-12)+'px';
+    el.style.transform=`scale(${.8+.2*o})`;
+  });
 }
 window.setT=setT;window.END=END;
 document.fonts.ready.then(()=>{
-  measure();keys();setT(0);window.READY=true;
+  measure();keys();PINS=[{a:1.6,b:3.0,x:()=>T.i.cx+30,y:()=>T.i.cy},{a:4.1,b:5.7,x:()=>T.b.x+T.b.w-14,y:()=>T.b.y-16},{a:6.7,b:8.1,x:()=>T.c.x-20,y:()=>T.c.cy}];setT(0);window.READY=true;
   if(!/[?&]frames/.test(location.search)){
     const t0=performance.now();
     (function loop(){setT(((performance.now()-t0)/1000)%END);requestAnimationFrame(loop)})();
