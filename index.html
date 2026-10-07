@@ -145,6 +145,7 @@ button.program:active{background:#ECEFF6}
 .intro{margin:-24px -24px -20px;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .onb-media{position:relative;flex:0 0 auto;height:256px;margin:4px 4px 0;border-radius:20px;background:var(--soft);overflow:hidden;transform:translateZ(0)}
 .onb-media video{display:block;width:100%;height:100%;object-fit:cover}
+.onb-media::after{content:"";position:absolute;left:0;right:0;bottom:0;height:72px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);pointer-events:none}
 .onb-x{background:rgba(255,255,255,.8)}
 .sheet:has(.intro){max-height:92%}
 .onb-body{padding:16px 24px 16px}
