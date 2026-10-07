@@ -146,11 +146,14 @@ button.program:active{background:#ECEFF6}
 .onb-media{position:relative;flex:0 0 auto;height:256px;margin:4px 4px 0;border-radius:20px;background:var(--soft);overflow:hidden;transform:translateZ(0)}
 .onb-media video{display:block;width:100%;height:100%;object-fit:cover}
 .onb-x{background:rgba(255,255,255,.8)}
-.onb-body{padding:20px 24px 20px}
+.sheet:has(.intro){max-height:92%}
+.onb-body{padding:16px 24px 16px}
 .onb-body h3{margin:0;font-size:20px;line-height:24px;font-weight:600;letter-spacing:-.01em}
-.onb-list{display:flex;flex-direction:column;gap:12px;margin:0;padding:16px 0 20px;list-style:none}
-.onb-list li{display:flex;align-items:center;gap:12px;font-size:16px;line-height:22px}
-.onb-list b{flex:0 0 24px;width:24px;height:24px;border-radius:12px;background:var(--accent);color:#fff;font:600 13px/24px var(--font);text-align:center}
+.onb-list{display:flex;flex-direction:column;gap:12px;margin:0;padding:12px 0 16px;list-style:none}
+.onb-list li{display:flex;align-items:flex-start;gap:12px}
+.onb-list li span{display:block;font-size:16px;line-height:22px;font-weight:500}
+.onb-list li small{display:block;font-size:14px;line-height:20px;color:rgba(34,38,59,.7)}
+.onb-list b{flex:0 0 24px;width:24px;height:24px;margin-top:-1px;border-radius:12px;background:var(--accent);color:#fff;font:600 13px/24px var(--font);text-align:center}
 .onb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 /* ONBOARDING:end */
 
@@ -479,11 +482,11 @@ const ONB=(()=>{
   const reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
   const seen=()=>{try{return localStorage.getItem(KEY)==='1'}catch(e){return false}};
   const mark=()=>{try{localStorage.setItem(KEY,'1')}catch(e){}};
-  const POINTS=['Условия подписки — в баннере','Остаток бесплатных — на шкале','Цена консультации — справа'];
+  const POINTS=[['Условия подписки','Срок и правила, нажмите на баннер'],['Бесплатные консультации','Шкала показывает остаток лимита'],['Цена консультации','Уже со скидкой, если она есть']];
   function html(){
     return `<div class="intro" role="group" aria-label="Как устроен раздел"><span class="onb-sr" id="sheetTitle">Как устроен раздел</span>`+
-      `<div class="onb-media"><video src="video/intro.mp4" poster="video/intro-poster.jpg" muted loop playsinline preload="auto" aria-hidden="true"${reduce?'':' autoplay'}></video></div>`+
-      `<div class="onb-body"><h3>Как устроен раздел</h3><ul class="onb-list">${POINTS.map((t,k)=>`<li><b>${k+1}</b>${t}</li>`).join('')}</ul>`+
+      `<div class="onb-media"><video src="video/intro-v3.mp4" poster="video/intro-v3.jpg" muted loop playsinline preload="auto" aria-hidden="true"${reduce?'':' autoplay'}></video></div>`+
+      `<div class="onb-body"><h3>Как устроен раздел</h3><ul class="onb-list">${POINTS.map((t,k)=>`<li><b>${k+1}</b><div><span>${t[0]}</span><small>${t[1]}</small></div></li>`).join('')}</ul>`+
       `<button class="btn" data-act="close-sheet">Понятно</button></div></div>`+
       `<button class="dlg-x onb-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button>`;
   }
