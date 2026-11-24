@@ -63,7 +63,7 @@ button.program:active{background:#ECEFF6}
 .renew b{display:block;font-size:16px;line-height:22px;font-weight:500}
 .renew span{display:block;font-size:14px;line-height:20px;color:var(--muted)}
 
-.heading{padding:24px 16px 12px}
+.heading{padding:12px 16px 12px}
 .heading h2{margin:0;font-size:24px;line-height:32px;font-weight:600;letter-spacing:-.015em}
 .heading p{margin:4px 0 0;font-size:14px;line-height:20px;color:rgba(34,38,59,.6)}
 
@@ -374,9 +374,6 @@ const closeSvg='<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stro
 function appbar(title,back){
   return `<header class="appbar"><button class="iconbtn" data-act="${back?'back':'noop'}" aria-label="Назад">${backSvg}</button><h1>${title}</h1><span></span></header>`;
 }
-function program(){
-  return `<button type="button" class="program" data-act="terms" aria-label="Условия подписки. Дата окончания: 31 декабря 2026"><span class="program-media"><img src="img/time-slot.png" alt="" width="80" height="80"></span><span class="program-text">Дата окончания: 31 декабря 2026</span><span class="info" aria-hidden="true">${infoSvg('rgba(34,38,59,.4)')}</span></button>`;
-}
 function blockCard(){
   const blocked=hasFreeAccess()&&S.block!=='none';
   if(!blocked) return '';
@@ -396,7 +393,7 @@ function footer(r,n){
   const bar=(w)=>`<div class="bar"${w!=null?` role="img" aria-label="Осталось ${r.left} из ${r.lim.total}"`:''}>${w!=null?`<i style="--w:${w}%;--n:${n||0}"></i>`:''}</div>`;
   if(r.left===0){
     const lab=`<b>${r.disc?`Со скидкой ${r.disc}% по подписке`:'Полная стоимость'}</b>`;
-    return `<div class="foot lim${hidden?' compact':''}"><div class="foot-row">${lab}<b class="foot-price">${fmt(r.paid)}</b></div>${hidden?'':bar(null)}<div class="ownrow"><span>Бесплатно снова с 1 ноября</span></div></div>`;
+    return `<div class="foot lim${hidden?' compact':''}"><div class="foot-row">${lab}<b class="foot-price">${fmt(r.paid)}</b></div>${hidden?'':bar(null)}<div class="ownrow"><span>Лимит исчерпан</span><i></i><span>Обновится 1 ноября</span></div></div>`;
   }
   const then=`<b class="foot-free">${eyeSvg}Бесплатно</b>`;
   if(hidden) return `<div class="foot lim compact"><div class="foot-row"><b>В пределах лимита</b>${then}</div>${ownRow}</div>`;
@@ -444,14 +441,14 @@ function renderCards(){
   return out.join('');
 }
 function mainScreen(){
-  return `<div class="page">`+appbar('Моя подписка',false)+`<div class="section">${program()}</div>${blockCard()}<div class="heading"><h2>Включено в подписку</h2></div><div class="cards">${renderCards()}</div></div>`;
+  return `<div class="page">`+appbar('Моя подписка',false)+`${blockCard()}<div class="heading"><h2>Включено в подписку</h2><p>Действует до 31 декабря 2026</p></div><div class="cards">${renderCards()}</div></div>`;
 }
 function loadingScreen(){
   const top='<div class="sk-top"><div class="sk" style="width:40px;height:40px;border-radius:12px;flex:0 0 40px"></div><div class="sk" style="flex:1;max-width:150px;height:18px"></div></div>';
   const lim=top+'<div class="sk-foot"><div class="sk" style="width:210px;height:12px"></div><div class="sk" style="height:6px;border-radius:3px"></div><div class="sk-row"><div class="sk" style="width:70px;height:14px"></div><div class="sk" style="width:88px;height:20px;border-radius:10px;margin-left:auto"></div></div></div>';
   const one=top+'<div class="sk-foot"><div class="sk-row"><div class="sk" style="width:150px;height:14px"></div><div class="sk" style="width:64px;height:20px;border-radius:10px;margin-left:auto"></div></div></div>';
   const c=h=>`<div class="sk-card">${h}</div>`;
-  return appbar('Моя подписка',false)+`<div class="section"><div class="program"><div class="sk" style="flex:0 0 80px;width:80px;height:80px;border-radius:12px"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-right:24px"><div class="sk" style="height:14px"></div><div class="sk" style="width:70%;height:14px"></div></div></div></div><div class="heading"><div class="sk" style="width:240px;height:26px"></div></div><div class="cards" role="status" aria-label="Загружаем стоимость консультаций">${c(lim)+c(lim)+c(lim)+c(one)+c(one)+c(one)}</div>`;
+  return appbar('Моя подписка',false)+`<div class="heading"><div class="sk" style="width:240px;height:26px"></div><div class="sk" style="width:180px;height:14px;margin-top:8px"></div></div><div class="cards" role="status" aria-label="Загружаем подписку">${c(lim)+c(lim)+c(lim)+c(one)+c(one)+c(one)}</div>`;
 }
 function errorScreen(){
   return appbar('Моя подписка',false)+`<div class="errstate" role="alert"><img src="img/something-happened.png" alt="" width="180" height="180"><div class="txt"><div><h2>Что-то пошло не так</h2><p>Нам не удалось загрузить экран, пожалуйста, попробуйте еще раз</p></div><button type="button" class="retry" data-act="retry">Обновить экран</button></div></div>`;
@@ -510,19 +507,6 @@ function pricePopupHTML(){
 function sheetHTML(kind){
   if(kind==='intro') return ONB.html(); /*ONB*/
   if(kind==='price') return pricePopupHTML();
-  if(kind==='terms'){
-    const lim=hasLimits(), pool=hasPool(), unlim=hasUnlimited(), freeAcc=hasFreeAccess();
-    const rows=[['Срок действия','До 31 декабря 2026'],['Цены','Цены на консультации зафиксированы при подключении подписки']];
-    if(unlim) rows.push(['Бесплатные консультации','Консультации по включённым специальностям доступны без ограничений по количеству']);
-    if(lim) rows.push(['Бесплатные консультации',(pool?'Лимит общий для включённых специальностей и обновляется в начале каждого месяца':'У каждой специальности свой лимит, он обновляется в начале каждого месяца')+', ближайшее обновление — 1 ноября. '+(S.type==='corp'?'Лимит общий: его делят все сотрудники компании':'Лимит личный: у каждого сотрудника свой')]);
-    if(lim){
-      const after=SPECS.map(calc).filter(r=>r.lim).map(r=>`${r.spec.name} — ${fmt(r.paid)}${r.disc?` (скидка ${r.disc}%)`:''}`);
-      rows.push(['Цена после лимита',after.join('<br>')]);
-    }
-    rows.push([lim?'Когда лимит закончился':'Скидки',(lim?'Записаться можно и после лимита. ':'')+'На одни специальности действует скидка, на другие — полная стоимость']);
-    if(freeAcc) rows.push(['Блокировка','Блокировка касается только бесплатных консультаций. Скидки и запись по цене из списка сохраняются']);
-    return `<div class="sheet-head"><h3 id="sheetTitle">Условия подписки</h3><button class="dlg-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${rows.map(r=>`<div><small>${r[0]}</small><p>${r[1]}</p></div>`).join('')}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
-  }
   const temp=S.block==='temp';
   const resume=hasLimits()?'21 октября бесплатная запись снова станет доступна, если останется лимит':'21 октября бесплатная запись снова станет доступна';
   return `<div class="sheet-head"><h3 id="sheetTitle">Об ограничении</h3><button class="dlg-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${temp
@@ -656,7 +640,6 @@ document.addEventListener('click',e=>{
   if(!a) return;
   switch(a.dataset.act){
    case 'drawer': document.body.classList.toggle('drawer');break;
-   case 'terms': openSheet('terms',a);break;
    case 'reasons': openSheet('reasons',a);break;
    case 'price-popup': openSheet('price',a);break;
    case 'close-sheet': closeSheet();break;
