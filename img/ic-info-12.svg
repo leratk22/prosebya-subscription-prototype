@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon / info">
+<g id="shape">
+<path d="M0 6C0 2.68629 2.68629 0 6 0C9.31371 0 12 2.68629 12 6C12 9.31371 9.31371 12 6 12C2.68629 12 0 9.31371 0 6ZM6 1.2C3.34903 1.2 1.2 3.34903 1.2 6C1.2 8.65097 3.34903 10.8 6 10.8C8.65097 10.8 10.8 8.65097 10.8 6C10.8 3.34903 8.65097 1.2 6 1.2Z" fill-rule="evenodd" clip-rule="evenodd" fill="#22263B" fill-opacity="0.6"/>
+<path d="M6.6 3.6C6.6 3.93137 6.33137 4.2 6 4.2C5.66863 4.2 5.4 3.93137 5.4 3.6C5.4 3.26863 5.66863 3 6 3C6.33137 3 6.6 3.26863 6.6 3.6Z" fill="#22263B" fill-opacity="0.6"/>
+<path d="M6 4.8C6.33137 4.8 6.6 5.06863 6.6 5.4V8.4C6.6 8.73137 6.33137 9 6 9C5.66863 9 5.4 8.73137 5.4 8.4V5.4C5.4 5.06863 5.66863 4.8 6 4.8Z" fill-rule="evenodd" clip-rule="evenodd" fill="#22263B" fill-opacity="0.6"/>
+</g>
+</g>
+</svg>
