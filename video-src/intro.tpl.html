@@ -9,6 +9,9 @@ body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased
 #cam{position:absolute;left:0;top:0;width:375px;transform-origin:0 0;will-change:transform}
 #cam .heading{padding:20px 16px 12px}
 .cards{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px}
+.merge-group{display:flex;flex-direction:column;gap:12px;border-radius:16px}
+.merge-card{background:#fff;border:1px solid rgba(52,64,121,.14);border-radius:16px;box-shadow:0 6px 10px -4px rgba(34,38,59,.1);overflow:hidden}
+.merge-foot-wrap{overflow:hidden}
 #chip{display:inline-flex;transform-origin:center center;will-change:transform}
 </style></head>
 <body>
@@ -17,49 +20,105 @@ body{font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased
 /*DATA*/
 const $=s=>document.querySelector(s);
 const ico=n=>{const sp=SPECS.find(x=>x.name===n);return `<span class="ico"><svg width="24" height="24" viewBox="0 0 48 48" fill="#344079"><path d="${ICONS[sp.id]}"/></svg></span>`};
-const card=(n,foot)=>`<article class="card"><div class="card-main"><div class="card-top">${ico(n)}<span class="card-name">${n}</span>${chev}</div></div>${foot}</article>`;
+const rowHTML=n=>`<div class="card-main"><div class="card-top">${ico(n)}<span class="card-name">${n}</span>${chev}</div></div>`;
 const limFoot=(left,total,withId)=>{
   const pct=Math.round(left/total*100);
   return `<div class="foot lim"><div class="foot-row"><b>Доступно ${left} из ${total}</b><b class="foot-free">${eyeSvg}Бесплатно</b></div><div class="bar"${withId?' id="bar"':''}><i${withId?' id="barfill"':''} style="--w:${pct}%;animation:none;width:${pct}%"></i></div><div class="ownrow"><span>Обновится 1 ноября</span></div></div>`;
 };
 const priceFoot=(txt,price,id)=>`<div class="foot"><div class="foot-row"><b>${txt}</b><b class="foot-price"${id?` id="${id}"`:''}>${price}</b></div></div>`;
-$('#cam').innerHTML=
- `<div class="heading"><h2>Включено в подписку</h2><p>Действует до 31 декабря 2026</p></div><div class="cards">`+
- card('Психолог',limFoot(2,3,true))+
- card('Коуч',limFoot(1,2,false))+
- card('Юрист',priceFoot('Со скидкой 10% по подписке','2\u202F700\u202F₽','chip'))+
- card('Нутрициолог',priceFoot('Полная стоимость','3\u202F000\u202F₽'))+`</div>`;
 
-const cam=$('#cam'),W=343,H=256;
+$('#cam').innerHTML=
+ `<div class="heading"><h2>Включено в подписку</h2><p>Действует до 31 декабря 2026</p></div>`+
+ `<div class="cards">`+
+   `<div class="merge-group" id="mg">`+
+     `<article class="merge-card" id="mc1">${rowHTML('Психолог')}<div class="merge-foot-wrap" id="mf1">${limFoot(2,3,true)}</div></article>`+
+     `<article class="merge-card" id="mc2">${rowHTML('Коуч')}<div class="merge-foot-wrap" id="mf2">${limFoot(1,2,false)}</div></article>`+
+     `<article class="merge-card" id="mc3">${rowHTML('Психотерапевт')}${limFoot(2,3,false)}</article>`+
+   `</div>`+
+   `<article class="card" id="jur">${rowHTML('Юрист')}${priceFoot('Со скидкой 10% по подписке','2\u202F700\u202F₽','chip')}</article>`+
+   `<article class="card">${rowHTML('Нутрициолог')}${priceFoot('Полная стоимость','3\u202F000\u202F₽')}</article>`+
+ `</div>`;
+
+const cam=$('#cam'),mg=$('#mg'),mc1=$('#mc1'),mc2=$('#mc2'),mc3=$('#mc3'),mf1=$('#mf1'),mf2=$('#mf2');
 const rel=el=>{const a=el.getBoundingClientRect(),b=cam.getBoundingClientRect();return {x:a.left-b.left,y:a.top-b.top,w:a.width,h:a.height}};
-let T={};
+let FOOT_H=82, T={};
+
+function applyMerge(m){
+  const inv=1-m;
+  mg.style.gap=(12*inv).toFixed(2)+'px';
+  mg.style.boxShadow=m>0.01?`0 6px 10px -4px rgba(34,38,59,${(0.1*m).toFixed(3)})`:'none';
+
+  const rIn=(16*inv).toFixed(2)+'px';
+  mc1.style.borderRadius=`16px 16px ${rIn} ${rIn}`;
+  mc2.style.borderRadius=`${rIn} ${rIn} ${rIn} ${rIn}`;
+  mc3.style.borderRadius=`${rIn} ${rIn} 16px 16px`;
+
+  const sh=`0 6px 10px -4px rgba(34,38,59,${(0.1*inv).toFixed(3)})`;
+  mc1.style.boxShadow=sh; mc2.style.boxShadow=sh; mc3.style.boxShadow=sh;
+
+  const sep=m>0.5?'1px solid rgba(34,38,59,.1)':'1px solid rgba(52,64,121,.14)';
+  mc1.style.borderBottom=sep;
+  mc2.style.borderTop=m>0.05?'0':'1px solid rgba(52,64,121,.14)';
+  mc2.style.borderBottom=sep;
+  mc3.style.borderTop=m>0.05?'0':'1px solid rgba(52,64,121,.14)';
+
+  const fh=(FOOT_H*inv).toFixed(2)+'px';
+  const fo=Math.max(0,1-m*1.65).toFixed(3);
+  mf1.style.height=fh; mf1.style.opacity=fo;
+  mf2.style.height=fh; mf2.style.opacity=fo;
+}
+
 function measure(){
   cam.style.transform='none';
-  const b=rel($('#bar')),c=rel($('#chip'));
+  mf1.style.height='auto'; mf2.style.height='auto';
+  FOOT_H=mf1.getBoundingClientRect().height;
+  // сначала измеряем шкалу и цену в разделённом состоянии (m = 0)
+  applyMerge(0);
+  const b=rel($('#bar')), c=rel($('#chip'));
+  // затем измеряем центр собранной тройной карточки (m = 1)
+  applyMerge(1);
+  const g=rel(mg);
   T={
     b:{x:b.x,y:b.y,w:b.w,h:b.h,cx:b.x+b.w/2,cy:b.y+b.h/2},
-    c:{x:c.x,y:c.y,w:c.w,h:c.h,cx:c.x+c.w/2,cy:c.y+c.h/2}
+    c:{x:c.x,y:c.y,w:c.w,h:c.h,cx:c.x+c.w/2,cy:c.y+c.h/2},
+    g:{x:g.x,y:g.y,w:g.w,h:g.h,cx:g.x+g.w/2,cy:g.y+g.h/2}
   };
+  applyMerge(0);
 }
+
 const ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
 const easeOut=x=>1-Math.pow(1-x,3);
 const lerp=(a,b,k)=>a+(b-a)*k;
 const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
-/* динамичные ключевые кадры (2 фокуса: шкала бесплатных + цена со скидкой) */
+
+/* 8.4 сек:
+   1) 0.0–2.4s: общий план → динамичный зум на жёлтую шкалу (Психолог)
+   2) 2.4–4.5s: динамичный зум на цену со скидкой (Юрист)
+   3) 4.5–7.6s: отъезд на общий план → 3 карточки плавно собираются в общую тройную (общий лимит) + пауза
+   4) 7.6–8.4s: мягкое возвращение к старту цикла */
+const END=8.4;
 let K;
 function keys(){
   K=[
-   {t:0.0,s:.80,P:[187,155],S:[171.5,124]},
-   {t:0.35,s:.80,P:[187,155],S:[171.5,124]},
+   {t:0.00,s:.78,P:[187,165],S:[171.5,126]},
+   {t:0.35,s:.78,P:[187,165],S:[171.5,126]},
+   // 1. Зум на жёлтую шкалу + пролёт к «Бесплатно»
    {t:1.05,s:1.28,P:[152,T.b.cy-4],S:[171.5,124]},
-   {t:2.55,s:1.28,P:[224,T.b.cy-4],S:[171.5,124]},
-   {t:3.25,s:1.42,P:[222,T.c.cy-8],S:[171.5,126]},
-   {t:4.85,s:1.42,P:[222,T.c.cy-8],S:[171.5,126]},
-   {t:5.65,s:.80,P:[187,155],S:[171.5,124]},
-   {t:6.40,s:.80,P:[187,155],S:[171.5,124]}
+   {t:2.40,s:1.28,P:[224,T.b.cy-4],S:[171.5,124]},
+   // 2. Зум на цену со скидкой 2 700 ₽
+   {t:3.10,s:1.42,P:[222,T.c.cy-8],S:[171.5,126]},
+   {t:4.50,s:1.42,P:[222,T.c.cy-8],S:[171.5,126]},
+   // 3. Отъезд на общий план (отдельные карточки) → сборка в тройную карточку
+   {t:5.25,s:.74,P:[187,195],S:[171.5,128]},
+   {t:5.45,s:.74,P:[187,195],S:[171.5,128]},
+   {t:6.50,s:.78,P:[187,T.g.cy-10],S:[171.5,128]},
+   {t:7.55,s:.78,P:[187,T.g.cy-10],S:[171.5,128]},
+   // 4. Возвращение к старту цикла
+   {t:8.25,s:.78,P:[187,165],S:[171.5,126]},
+   {t:8.40,s:.78,P:[187,165],S:[171.5,126]}
   ];
 }
-const END=6.4;
+
 function camAt(t){
   let a=K[0],b=K[K.length-1];
   for(let k=0;k<K.length-1;k++){if(t>=K[k].t&&t<=K[k+1].t){a=K[k];b=K[k+1];break}}
@@ -67,23 +126,36 @@ function camAt(t){
   const s=lerp(a.s,b.s,u),P=[lerp(a.P[0],b.P[0],u),lerp(a.P[1],b.P[1],u)],S=[lerp(a.S[0],b.S[0],u),lerp(a.S[1],b.S[1],u)];
   return {s,tx:S[0]-s*P[0],ty:S[1]-s*P[1]};
 }
+
 function setT(t){
+  // 0..5.45 — отдельные карточки; 5.45..6.50 — сборка в общую тройную; 7.55..8.25 — обратно к старту
+  let m;
+  if(t<5.45) m=0;
+  else if(t<6.50) m=ease(clamp((t-5.45)/1.05));
+  else if(t<7.55) m=1;
+  else if(t<8.25) m=1-ease(clamp((t-7.55)/0.70));
+  else m=0;
+  applyMerge(m);
+
   const c=camAt(t);
   cam.style.transform=`translate(${c.tx}px,${c.ty}px) scale(${c.s})`;
-  // жёлтая шкала динамично заполняется синхронно с пролётом камеры
+
+  // жёлтая шкала заполняется во время первого зума
   const f=$('#barfill');
   if(f){
     const full=parseFloat(f.style.getPropertyValue('--w'));
     f.style.width=(t<0.95?full:full*easeOut(clamp((t-1.05)/1.05)))+'%';
   }
-  // мягкий акцентный импульс на бейдже цены
+
+  // акцентный импульс на бейдже цены во время второго зума
   const chip=$('#chip');
   if(chip){
-    const p=clamp((t-3.35)/.65);
+    const p=clamp((t-3.20)/.65);
     const bump=p>0&&p<1?Math.sin(p*Math.PI)*0.09:0;
     chip.style.transform=`scale(${(1+bump).toFixed(4)})`;
   }
 }
+
 window.setT=setT;window.END=END;
 document.fonts.ready.then(()=>{
   measure();keys();setT(0);window.READY=true;
