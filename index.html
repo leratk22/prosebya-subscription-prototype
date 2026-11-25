@@ -16,7 +16,7 @@
 :root{
   --ink:#22263B; --muted:#626A7E; --surface:#F4F6FA; --soft:#EAEFF8; --line:#E3E6ED;
   --accent:#344079; --accent-ov:rgba(52,64,121,.1); --action:#FFB800; --action-hover:#F6A300;
-  --negative:#F15D56; --negative-ov:rgba(241,93,86,.1); --track:#E7E9ED; --overlay:rgba(34,38,59,.8);
+  --negative:#F15D56; --negative-ov:rgba(241,93,86,.05); --track:#E7E9ED; --overlay:rgba(34,38,59,.8);
   --font:'Euclid Circular A',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
 }
 *{box-sizing:border-box}
@@ -41,8 +41,8 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .iconbtn{width:44px;height:44px;border:0;background:none;display:inline-flex;align-items:center;justify-content:center;border-radius:22px;padding:0}
 .iconbtn:active{background:rgba(34,38,59,.05)}
 
-/* ---------- фон страницы: завиток из главного экрана ---------- */
-.device::before{content:"";position:absolute;left:0;right:0;bottom:0;top:190px;background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 -190 375 490%27 width=%27375%27 height=%27490%27%3E%3Cpath transform=%27translate%28-217.94 -126.27%29 rotate%28-18.4%29%27 d=%27M58.783 218.427C114.299 450.308 434.11 223.009 382.433 133.627 330.755 44.244 74.796 328.772 288.961 395.987 467.623 452.061 492.479 255.234 407.388 334.117 347.33 389.796 364.943 491.383 437.996 531.374 501.093 565.915 593.744 578.443 655.784 538.877%27 fill=%27none%27 stroke=%27%23344079%27 stroke-width=%2782%27 stroke-linecap=%27round%27 opacity=%27.06%27/%3E%3C/svg%3E") center/cover no-repeat;pointer-events:none;z-index:0}
+/* ---------- фон страницы: дуга graphic-bg из DS ---------- */
+.device::before{content:"";position:absolute;left:0;right:0;top:256px;height:300px;background:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 375 300%27 width=%27375%27 height=%27300%27 fill=%27none%27%3E%3Cpath opacity=%270.06%27 d=%27M-43.5 28C9.34063 101.587 172.117 219.545 400.5 102.679%27 stroke=%27%23344079%27 stroke-width=%27100%27/%3E%3C/svg%3E") center/100% 100% no-repeat;pointer-events:none;z-index:0}
 
 /* ---------- карточка программы ---------- */
 .section{padding:8px 16px 0}
@@ -54,11 +54,11 @@ button.program:active{background:#ECEFF6}
 .program .info{position:absolute;top:0;right:0;width:48px;height:48px;display:flex;align-items:center;justify-content:center}
 .hr{height:1px;background:var(--line)}
 .pad-h{padding:0 16px}
-.block{display:flex;align-items:center;gap:12px;margin:8px 16px 0;padding:12px 56px 12px 16px;min-height:44px;background:var(--negative-ov);border-radius:16px;position:relative}
+.block{display:flex;align-items:center;gap:12px;margin:8px 16px 0;padding:12px 52px 12px 16px;min-height:44px;background:var(--negative-ov);border-radius:16px;position:relative}
 .block>div{flex:1}
-.block .iconbtn{position:absolute;right:4px;top:6px}
-.block b{display:block;font-size:16px;line-height:22px;font-weight:600}
-.block span{display:block;font-size:14px;line-height:20px;color:rgba(34,38,59,.6);margin-top:2px}
+.block .iconbtn{position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+.block b{display:block;font-size:16px;line-height:20px;font-weight:600}
+.block span{display:block;font-size:14px;line-height:20px;color:rgba(34,38,59,.6);margin-top:4px}
 .renew{display:flex;align-items:center;gap:12px;padding:12px 16px 16px}
 .renew b{display:block;font-size:16px;line-height:22px;font-weight:500}
 .renew span{display:block;font-size:14px;line-height:20px;color:var(--muted)}
@@ -72,7 +72,7 @@ button.program:active{background:#ECEFF6}
 .card{background:#fff;border:1px solid rgba(52,64,121,.14);border-radius:16px;box-shadow:0 6px 10px -4px rgba(34,38,59,.1);overflow:hidden}
 .card-main{display:block;width:100%;border:0;background:none;text-align:left;padding:0}
 .card-main:active{background:rgba(34,38,59,.04)}
-.card-top{display:flex;align-items:center;gap:12px;min-height:56px;padding:12px 16px 8px}
+.card-top{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 16px}
 .ico{flex:0 0 40px;width:40px;height:40px;border-radius:12px;background:var(--accent-ov);display:flex;align-items:center;justify-content:center}
 .card-name{flex:1;font-size:16px;line-height:24px;font-weight:600}
 .card-name-wrap{flex:1;min-width:0;display:flex;flex-direction:column}
@@ -80,48 +80,48 @@ button.program:active{background:#ECEFF6}
 .card-free{font-size:14px;line-height:20px;font-weight:600;color:var(--accent)}
 .card-free.paid{color:var(--ink)}
 .card-desc{padding:0 16px 12px;font-size:14px;line-height:20px;color:var(--muted)}
-.foot{border-top:1px solid var(--line);padding:12px 16px;background:#fff}
+.foot{border-top:1px solid rgba(34,38,59,.1);padding:12px 16px;background:#fff}
 .foot-row{display:flex;align-items:center;gap:8px;font-size:14px;line-height:20px}
 .foot-row b{flex:1;font-weight:500;display:flex;align-items:center}
 .foot-row span{color:var(--muted);text-align:right}
-.foot-row b.foot-price{flex:0 0 auto;padding:2px 8px;border-radius:100px;background:rgba(34,38,59,.06);font-size:12px;line-height:16px;font-weight:500;color:var(--ink)}
+.foot-row b.foot-price{flex:0 0 auto;padding:4px 8px;border-radius:999px;background:var(--accent-ov);font-size:12px;line-height:16px;font-weight:500;color:var(--accent)}
 .foot-row b span.dsc{display:inline-flex;align-items:center;gap:4px;margin-left:4px;line-height:20px;font-weight:400;text-align:left;color:rgba(34,38,59,.6)}
 .dsc i{flex:0 0 4px;width:4px;height:4px;border-radius:2px;background:rgba(34,38,59,.4)}
-.foot-row b.foot-free{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;background:var(--accent-ov);font-size:12px;line-height:16px;font-weight:500;color:var(--accent)}
+.foot-row b.foot-free{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:999px;background:var(--accent-ov);font-size:12px;line-height:16px;font-weight:500;color:var(--accent)}
 .foot.lim{display:flex;flex-direction:column;gap:8px;padding:12px 16px}
 .foot.lim.compact{gap:4px}
-.ownrow{display:flex;align-items:center;gap:4px;font-size:12px;line-height:16px;font-weight:500;color:rgba(34,38,59,.6)}
+.ownrow{display:flex;align-items:center;gap:4px;font-size:12px;line-height:16px;font-weight:400;color:rgba(34,38,59,.6)}
 .ownrow i{flex:0 0 4px;height:4px;border-radius:2px;background:rgba(34,38,59,.4)}
 .bar{height:6px;border-radius:3px;background:rgba(34,38,59,.05)}
-.bar i{display:block;height:100%;width:var(--w);border-radius:3px;background:var(--accent);min-width:0;animation:fill .9s cubic-bezier(.22,.8,.2,1) both;animation-delay:calc(var(--n,0)*80ms + 150ms)}
+.bar i{display:block;height:100%;width:var(--w);border-radius:3px;background:var(--action);min-width:0;animation:fill .9s cubic-bezier(.22,.8,.2,1) both;animation-delay:calc(var(--n,0)*80ms + 150ms)}
 @keyframes fill{from{width:0}}
-.owner{margin-top:4px;font-size:12px;line-height:16px;font-weight:500;color:rgba(34,38,59,.6)}
+.owner{margin-top:4px;font-size:12px;line-height:16px;font-weight:400;color:rgba(34,38,59,.6)}
 
 /* ---------- общий пул лимита (единая карточка) ---------- */
 .pool-list{display:flex;flex-direction:column}
-.pool-item{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:10px 16px;border:0;border-top:1px solid var(--line);background:#fff;text-align:left}
+.pool-item{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 16px;border:0;border-top:1px solid rgba(34,38,59,.1);background:#fff;text-align:left}
 .pool-item:first-child{border-top:0}
 .pool-item:active{background:rgba(34,38,59,.04)}
 .pool-sub{font-size:12px;line-height:16px;color:var(--muted);margin-top:1px}
-.pool-item .foot-price{flex:0 0 auto;padding:2px 8px;border-radius:100px;background:rgba(34,38,59,.06);font-size:12px;line-height:16px;font-weight:500;color:var(--ink)}
+.pool-item .foot-price{flex:0 0 auto;padding:4px 8px;border-radius:999px;background:var(--accent-ov);font-size:12px;line-height:16px;font-weight:500;color:var(--accent)}
 
 /* ---------- шторки ---------- */
 .layer{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:16px;pointer-events:none;visibility:hidden;transition:visibility 0s .22s}
 .layer.open{pointer-events:auto;visibility:visible;transition:none}
 .scrim{position:absolute;inset:0;background:rgba(34,38,59,.4);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;transition:opacity .22s}
 .layer.open .scrim{opacity:1}
-/* поп-ап как в ЛК: по центру, радиус 24, отступы 24 24 20 */
-.sheet{position:relative;display:flex;flex-direction:column;width:100%;max-width:343px;max-height:80%;overflow:hidden;background:#fff;border-radius:24px;padding:24px 24px 20px;opacity:0;transform:scale(.96);transition:opacity .2s,transform .22s cubic-bezier(.2,.8,.2,1)}
+/* поп-ап из DS (popup): по центру, радиус 16, отступы 16 */
+.sheet{position:relative;display:flex;flex-direction:column;width:100%;max-width:343px;max-height:80%;overflow:hidden;background:#fff;border-radius:16px;padding:16px;opacity:0;transform:scale(.96);transition:opacity .2s,transform .22s cubic-bezier(.2,.8,.2,1)}
 .layer.open .sheet{opacity:1;transform:none}
 .sheet-head{display:flex;align-items:center;padding-right:32px;min-height:24px}
 .sheet-head h3{flex:1;margin:0;font-size:20px;line-height:24px;font-weight:600;letter-spacing:-.01em}
 .dlg-x{position:absolute;top:12px;right:12px;width:24px;height:24px;border:0;border-radius:50%;background:rgba(34,38,59,.05);display:flex;align-items:center;justify-content:center;padding:0}
 .dlg-x::after{content:"";position:absolute;inset:-10px}
 .dlg-x:active{background:rgba(34,38,59,.1)}
-.terms{display:flex;flex-direction:column;gap:16px;padding:16px 0 24px;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.terms{display:flex;flex-direction:column;gap:12px;padding:12px 0 16px;flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain}
 .sheet-head,.sheet .btn{flex:0 0 auto}
 .terms small{display:block;font-size:14px;line-height:20px;color:var(--muted)}
-.terms p{margin:2px 0 0;font-size:16px;line-height:22px}
+.terms p{margin:0;font-size:15px;line-height:22px;color:var(--ink)}
 .sheet .btn{min-height:44px;border-radius:32px;font-size:14px}
 .btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;border:0;border-radius:999px;background:var(--action);color:var(--ink);font-size:16px;font-weight:600}
 .btn:active{background:var(--action-hover)}
@@ -190,20 +190,17 @@ button.program:active{background:#ECEFF6}
 .errstate .retry:active{background:rgba(52,64,121,.06)}
 
 /* ONBOARDING:start — приветственный поп-ап с видео. Чтобы убрать: удалить блоки ONBOARDING в CSS и JS и три строки JS с пометкой ONB */
-.intro{margin:-24px -24px -20px;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain}
-.onb-media{position:relative;flex:0 0 auto;height:256px;margin:4px 4px 0;border-radius:20px;background:var(--soft);overflow:hidden;transform:translateZ(0)}
+.intro{margin:-16px;display:flex;flex-direction:column;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.onb-media{position:relative;flex:0 0 auto;height:240px;margin:4px 4px 0;border-radius:12px;background:var(--soft);overflow:hidden;transform:translateZ(0)}
 .onb-media video{display:block;width:100%;height:100%;object-fit:cover}
-.onb-media::after{content:"";position:absolute;left:0;right:0;bottom:0;height:72px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);pointer-events:none}
+.onb-media::after{content:"";position:absolute;left:0;right:0;bottom:0;height:64px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);pointer-events:none}
 .onb-x{background:rgba(255,255,255,.8)}
 .sheet:has(.intro){max-height:92%}
-.onb-body{padding:16px 24px 16px}
-.onb-body .btn{width:calc(100% + 16px);margin:0 -8px}
+.onb-body{padding:12px 16px 16px}
+.onb-body .btn{width:100%;margin:0}
 .onb-body h3{margin:0;font-size:20px;line-height:24px;font-weight:600;letter-spacing:-.01em}
-.onb-list{display:flex;flex-direction:column;gap:12px;margin:0;padding:12px 0 16px;list-style:none}
-.onb-list li{display:flex;align-items:flex-start;gap:8px}
-.onb-list li span{display:block;font-size:16px;line-height:24px;font-weight:500}
-.onb-list li small{display:block;font-size:14px;line-height:20px;color:rgba(34,38,59,.7)}
-.onb-list b{flex:0 0 16px;text-align:left;font-size:16px;line-height:24px;font-weight:400;color:rgba(34,38,59,.6)}
+.onb-copy{display:flex;flex-direction:column;gap:10px;padding:12px 0 16px}
+.onb-copy p{margin:0;font-size:15px;line-height:22px;color:var(--ink)}
 .onb-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 /* ONBOARDING:end */
 
@@ -333,7 +330,7 @@ let CLEAN=false;
 let lastFocus=null,sheetKind=null,mainScroll=0,loadTimer=null;
 const $=s=>document.querySelector(s);
 const vp=$('#viewport');
-const fmt=n=>n.toLocaleString('ru-RU')+' ₽';
+const fmt=n=>n.toLocaleString('ru-RU').replace(/\u00A0/g,'\u202F')+'\u202F₽';
 
 const hasLimits=()=>S.type==='corp'||S.type==='pers';
 const hasPool=()=>hasLimits()&&!!S.pool;
@@ -508,10 +505,10 @@ function sheetHTML(kind){
   if(kind==='intro') return ONB.html(); /*ONB*/
   if(kind==='price') return pricePopupHTML();
   const temp=S.block==='temp';
-  const resume=hasLimits()?'21 октября бесплатная запись снова станет доступна, если останется лимит':'21 октября бесплатная запись снова станет доступна';
+  const resume=hasLimits()?'21 октября бесплатная запись снова станет доступна, если останется лимит.':'21 октября бесплатная запись снова станет доступна.';
   return `<div class="sheet-head"><h3 id="sheetTitle">Об ограничении</h3><button class="dlg-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button></div><div class="terms">${temp
-   ?`<p><b>Бесплатные консультации заблокированы до 20 октября</b></p><p>Скидки сохраняются: выбирайте специалиста и записывайтесь по цене из списка</p><p>${resume}</p>`
-   :'<p><b>Бесплатные консультации заблокированы</b></p><p>Бесплатная запись по этой подписке больше недоступна</p><p>Скидки сохраняются: записаться можно по цене из списка</p>'}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
+   ?`<p>Бесплатные консультации заблокированы до 20 октября.</p><p>Скидки сохраняются: выбирайте специалиста и записывайтесь по цене из списка.</p><p>${resume}</p>`
+   :'<p>Бесплатные консультации заблокированы.</p><p>Бесплатная запись по этой подписке больше недоступна.</p><p>Скидки сохраняются: записаться можно по цене из списка.</p>'}</div><button class="btn" data-act="close-sheet">Понятно</button>`;
 }
 
 /* ---------------- рендер ---------------- */
@@ -600,11 +597,14 @@ const ONB=(()=>{
   const reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
   const seen=()=>{try{return localStorage.getItem(KEY)==='1'}catch(e){return false}};
   const mark=()=>{try{localStorage.setItem(KEY,'1')}catch(e){}};
-  const POINTS=[['Условия подписки','Срок и правила, нажмите на баннер'],['Бесплатные консультации','Шкала показывает остаток лимита'],['Цена консультации','Уже со скидкой, если она есть']];
+  const PARAS=[
+    'Шкала показывает, сколько бесплатных консультаций осталось и когда обновится лимит.',
+    'Цена в карточке указана уже со скидкой, если она есть по вашей подписке.'
+  ];
   function html(){
     return `<div class="intro" role="group" aria-label="Как устроен раздел"><span class="onb-sr" id="sheetTitle">Как устроен раздел</span>`+
-      `<div class="onb-media"><video src="video/intro-v4.mp4" poster="video/intro-v4.jpg" muted loop playsinline preload="auto" aria-hidden="true"${reduce?'':' autoplay'}></video></div>`+
-      `<div class="onb-body"><h3>Как устроен раздел</h3><ul class="onb-list">${POINTS.map((t,k)=>`<li><b>${k+1}.</b><div><span>${t[0]}</span><small>${t[1]}</small></div></li>`).join('')}</ul>`+
+      `<div class="onb-media"><video src="video/intro-v6.mp4" poster="video/intro-v6.jpg" muted loop playsinline preload="auto" aria-hidden="true"${reduce?'':' autoplay'}></video></div>`+
+      `<div class="onb-body"><h3>Как устроен раздел</h3><div class="onb-copy">${PARAS.map(p=>`<p>${p}</p>`).join('')}</div>`+
       `<button class="btn" data-act="close-sheet">Понятно</button></div></div>`+
       `<button class="dlg-x onb-x" data-act="close-sheet" aria-label="Закрыть">${closeSvg}</button>`;
   }
