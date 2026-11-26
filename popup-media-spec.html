@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Popup Media Spec — правила масштабирования · Просебя</title>
+<link rel="preload" href="fonts/EuclidCircularA-Regular.woff" as="font" type="font/woff" crossorigin>
+<link rel="preload" href="fonts/EuclidCircularA-SemiBold.woff" as="font" type="font/woff" crossorigin>
+<style>
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/EuclidCircularA-Regular.woff) format('woff')}
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/EuclidCircularA-Medium.woff) format('woff')}
+@font-face{font-family:'Euclid Circular A';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/EuclidCircularA-SemiBold.woff) format('woff')}
+:root{
+  --ink:#22263B; --muted:rgba(34,38,59,.6); --surface:#F4F6FA; --soft:#EAEFF8; --line:rgba(34,38,59,.1);
+  --accent:#344079; --accent-ov:rgba(52,64,121,.1); --action:#FFB800; --action-hover:#F6A300;
+  --red:#F15D56; --red-ov:rgba(241,93,86,.1); --green:#5E8C31; --green-ov:rgba(117,159,69,.12);
+  --font:'Euclid Circular A',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100vh}
+body{background:#E9ECF2;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+
+.wrap{max-width:1180px;margin:0 auto;padding:28px 24px 48px;display:grid;grid-template-columns:minmax(380px,1fr) 400px;gap:32px;align-items:start}
+.topbar{grid-column:1 / -1;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.topbar h1{margin:0;font-size:26px;line-height:32px;font-weight:600;letter-spacing:-.015em}
+.topbar p{margin:4px 0 0;font-size:14px;line-height:20px;color:var(--muted)}
+.back-link{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:#fff;color:var(--accent);text-decoration:none;font-size:13px;font-weight:500;box-shadow:0 2px 8px rgba(20,24,50,.08)}
+.back-link:hover{background:var(--surface)}
+
+/* ---------- сцена с телефоном и линейками ---------- */
+.stage-card{background:#fff;border-radius:24px;padding:28px;box-shadow:0 8px 30px rgba(20,24,50,.08);display:flex;flex-direction:column;align-items:center;gap:20px}
+.phone-area{position:relative;width:100%;min-height:680px;border-radius:20px;background:rgba(34,38,59,.52);display:flex;align-items:center;justify-content:center;padding:88px 76px 84px 36px;overflow:hidden}
+
+.popup-wrap{position:relative;transition:width .2s ease}
+/* линейка ширины сверху */
+.ruler-w{position:absolute;left:0;right:0;top:-28px;height:14px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.ruler-w::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--red)}
+.ruler-w::after{content:"";position:absolute;left:0;right:0;top:2px;bottom:2px;border-left:1px solid var(--red);border-right:1px solid var(--red)}
+.ruler-tag{position:relative;z-index:1;padding:2px 7px;border-radius:4px;background:var(--red);color:#fff;font-size:11px;line-height:14px;font-weight:500;white-space:nowrap}
+
+/* линейка высоты справа от Media */
+.ruler-h{position:absolute;left:calc(100% + 14px);top:4px;width:14px;display:flex;align-items:center;pointer-events:none;transition:height .18s ease}
+.ruler-h::before{content:"";position:absolute;top:0;bottom:0;left:6px;width:1px;background:var(--red)}
+.ruler-h::after{content:"";position:absolute;top:0;bottom:0;left:2px;right:2px;border-top:1px solid var(--red);border-bottom:1px solid var(--red)}
+.ruler-h .ruler-tag{margin-left:14px}
+
+/* сам попап (DS popup) */
+.popup{position:relative;width:100%;background:#fff;border-radius:16px;box-shadow:0 16px 40px rgba(15,18,36,.32);display:flex;flex-direction:column}
+.popup-header{position:relative;padding:4px 4px 0;display:flex;flex-direction:column}
+.media-box{position:relative;z-index:2;width:100%;border-radius:12px;background:var(--soft);overflow:hidden;transition:height .18s ease}
+.media-box.show-ghost{overflow:visible}
+.media-clip{position:relative;width:100%;height:100%;border-radius:12px;overflow:hidden;z-index:2;background:var(--soft)}
+.media-clip canvas,.media-clip video,.media-clip img{display:block;width:100%;height:100%;object-fit:cover}
+/* полупрозрачный «призрак» обрезанных областей */
+.ghost-layer{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;pointer-events:none;opacity:0;transition:opacity .2s;border:1.5px dashed rgba(241,93,86,.85);border-radius:8px;overflow:hidden}
+.media-box.show-ghost .ghost-layer{opacity:.35}
+.ghost-layer canvas,.ghost-layer video,.ghost-layer img{display:block;width:100%;height:100%;object-fit:cover}
+
+.fade-overlay{position:absolute;left:0;right:0;bottom:0;height:64px;z-index:3;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff);pointer-events:none;transition:opacity .2s}
+.fade-overlay.off{opacity:0}
+.media-skeleton{position:absolute;inset:0;z-index:2;border-radius:12px;background:#E7EBF4;overflow:hidden;display:none}
+.media-skeleton::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:translateX(-100%);animation:shimmer 1.3s infinite}
+@keyframes shimmer{to{transform:translateX(100%)}}
+.popup.is-loading .media-clip{opacity:0}
+.popup.is-loading .media-skeleton{display:block}
+.popup.is-error .media-box{display:none}
+.popup.is-error .popup-header{padding:12px 16px 8px}
+.popup.is-error .title-wrap{margin:0;padding:4px 36px 0 0}
+.popup.is-error .close-btn{top:8px;right:8px}
+.popup.is-error .close-btn span{background:rgba(34,38,59,.05);box-shadow:none}
+.close-btn{position:absolute;top:8px;right:8px;z-index:4;width:40px;height:40px;border:0;background:none;display:flex;align-items:center;justify-content:center;padding:0;pointer-events:none}
+.close-btn span{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(34,38,59,.12)}
+
+.title-wrap{position:relative;z-index:5;background:#fff;padding:12px 16px 8px;margin:0 -4px}
+.title-wrap.off{display:none}
+.title-wrap h2{margin:0;font-size:20px;line-height:24px;font-weight:600;letter-spacing:-.01em}
+
+.popup-content{position:relative;z-index:5;background:#fff;padding:4px 16px 0}
+.title-wrap.off + .popup-content,.popup-header:has(.title-wrap.off) + .popup-content{padding-top:12px}
+.popup-content p{margin:0;font-size:14px;line-height:20px;color:var(--ink)}
+.popup-buttons{position:relative;z-index:5;background:#fff;border-radius:0 0 16px 16px;padding:16px}
+.popup-cta{width:100%;height:44px;border:0;border-radius:999px;background:var(--action);color:var(--ink);font-size:14px;font-weight:600}
+
+/* телеметрия под сценой */
+.telemetry{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metric{background:var(--surface);border-radius:12px;padding:12px 14px}
+.metric small{display:block;font-size:11px;line-height:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.metric b{display:block;margin-top:4px;font-size:15px;line-height:20px;font-weight:600}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:13px;line-height:18px;font-weight:500}
+.status-pill.ok{background:var(--green-ov);color:var(--green)}
+.status-pill.clamp{background:var(--red-ov);color:var(--red)}
+
+/* ---------- панель управления ---------- */
+.panel{background:#fff;border-radius:24px;padding:22px;box-shadow:0 8px 30px rgba(20,24,50,.08);display:flex;flex-direction:column;gap:18px}
+.sec-title{margin:0 0 8px;font-size:12px;line-height:16px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.preset{padding:8px 6px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:center;transition:background .15s,border-color .15s}
+.preset b{display:block;font-size:14px;line-height:18px;font-weight:600}
+.preset small{display:block;font-size:11px;line-height:14px;color:var(--muted);margin-top:2px}
+.preset.active{border-color:var(--accent);background:var(--accent-ov)}
+.preset.active b{color:var(--accent)}
+
+.seg{display:flex;background:var(--surface);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;min-height:34px;border:0;border-radius:8px;background:none;padding:4px 8px;font-size:13px;line-height:16px}
+.seg button.active{background:#fff;box-shadow:0 1px 3px rgba(20,24,50,.15);font-weight:600}
+
+.slider-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.slider-row b{font-weight:600;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+.toggles{display:flex;flex-direction:column;gap:8px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border-radius:10px;background:var(--surface);font-size:13px;line-height:18px}
+.toggle input{width:18px;height:18px;accent-color:var(--accent);cursor:pointer}
+
+.upload-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px 14px;border:1.5px dashed rgba(52,64,121,.3);border-radius:12px;background:var(--surface);color:var(--accent);font-size:13px;font-weight:500;cursor:pointer}
+.upload-btn:hover{background:var(--accent-ov)}
+.upload-btn input{display:none}
+
+.code-box{background:#1E2235;color:#E8ECF8;border-radius:12px;padding:12px 14px;font:12px/18px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre;overflow-x:auto}
+.code-box .cm{color:#8E97B5}
+.code-box .kw{color:#FFB800}
+
+@media (max-width:920px){
+  .wrap{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div>
+      <h1>Popup Media — живая спецификация масштабирования</h1>
+      <p>Компонент <code>_popup-header (Scroll=Media)</code> · <code>width: 100%</code>, <code>min-height: 140 px</code>, <code>max-height: 320 px</code>, <code>object-fit: cover</code></p>
+    </div>
+    <a class="back-link" href="./">← Вернуться в прототип</a>
+  </header>
+
+  <section class="stage-card">
+    <div class="status-pill ok" id="statusPill">Пропорционально ширине · без обрезки</div>
+
+    <div class="phone-area">
+      <div class="popup-wrap" id="popupWrap" style="width:311px">
+        <div class="ruler-w"><span class="ruler-tag" id="wTag">width: 100% (303 px)</span></div>
+        <div class="ruler-h" id="rulerH" style="height:220px"><span class="ruler-tag" id="hTag">220 px</span></div>
+
+        <div class="popup" id="popupCard">
+          <div class="popup-header">
+            <div class="media-box show-ghost" id="mediaBox" style="height:220px">
+              <div class="ghost-layer" id="ghostLayer"></div>
+              <div class="media-clip" id="mediaClip"></div>
+              <div class="media-skeleton" aria-hidden="true"></div>
+              <div class="fade-overlay" id="fadeOverlay"></div>
+            </div>
+            <div class="close-btn" aria-hidden="true">
+              <span><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="rgba(34,38,59,.5)" stroke-width="1.6" stroke-linecap="round"><path d="M4 4l8 8M12 4L4 12"/></svg></span>
+            </div>
+            <div class="title-wrap" id="titleWrap">
+              <h2>Заголовок попапа</h2>
+            </div>
+          </div>
+          <div class="popup-content">
+            <p>Контейнер медиа занимает 100% ширины и подстраивается под пропорции исходника в диапазоне от 140 до 320 px. Всё лишнее обрезается по центру (cover).</p>
+          </div>
+          <div class="popup-buttons">
+            <button type="button" class="popup-cta">Понятно</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="telemetry">
+      <div class="metric"><small>Исходник</small><b id="mSrc">4:3 (800×600)</b></div>
+      <div class="metric"><small>Расчёт без лимита</small><b id="mRaw">227 px</b></div>
+      <div class="metric"><small>Итоговая высота</small><b id="mFinal">227 px</b></div>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div>
+      <div class="sec-title">Пропорции исходного медиа</div>
+      <div class="presets" id="presets">
+        <button type="button" class="preset" data-w="21" data-h="9"><b>21:9</b><small>min 140 px</small></button>
+        <button type="button" class="preset" data-w="16" data-h="9"><b>16:9</b><small>~170 px</small></button>
+        <button type="button" class="preset active" data-w="4" data-h="3"><b>4:3</b><small>~227 px</small></button>
+        <button type="button" class="preset" data-w="1" data-h="1"><b>1:1</b><small>~303 px</small></button>
+        <button type="button" class="preset" data-w="4" data-h="5"><b>4:5</b><small>max 320 px</small></button>
+        <button type="button" class="preset" data-w="9" data-h="16"><b>9:16</b><small>max 320 px</small></button>
+      </div>
+    </div>
+
+    <div>
+      <div class="slider-row"><span>Соотношение сторон (W / H)</span><b id="ratioVal">1.33</b></div>
+      <input type="range" id="ratioSlider" min="0.5" max="2.6" step="0.01" value="1.33">
+    </div>
+
+    <div>
+      <div class="sec-title">Источник медиа</div>
+      <label class="upload-btn">
+        <span id="uploadLabel">Загрузить своё фото или видео</span>
+        <input type="file" id="fileInput" accept="image/*,video/*">
+      </label>
+      <button type="button" id="resetSrc" style="display:none;margin-top:8px;width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:13px;color:var(--accent);font-weight:500">Вернуть тестовую картинку</button>
+    </div>
+
+    <div>
+      <div class="sec-title">Ширина попапа</div>
+      <div class="seg" id="wSeg">
+        <button type="button" data-pw="296">296 px (SE)</button>
+        <button type="button" class="active" data-pw="311">311 px (DS)</button>
+        <button type="button" data-pw="343">343 px (Wide)</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Состояние загрузки медиа</div>
+      <div class="seg" id="loadSeg">
+        <button type="button" class="active" data-load="ready">Готово</button>
+        <button type="button" data-load="loading">Скелетон</button>
+        <button type="button" data-load="error">Ошибка</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Свойства компонента и отладка</div>
+      <div class="toggles">
+        <label class="toggle"><span>Показать обрезанные края (ghost)</span><input type="checkbox" id="chkGhost" checked></label>
+        <label class="toggle"><span>Show title (заголовок)</span><input type="checkbox" id="chkTitle" checked></label>
+        <label class="toggle"><span>Fade (нижний градиент 64 px)</span><input type="checkbox" id="chkFade" checked></label>
+      </div>
+    </div>
+
+    <div class="code-box"><span class="cm">/* Правило для контейнера медиа */</span>
+<span class="kw">width</span>: 100%;
+<span class="kw">min-height</span>: 140px;
+<span class="kw">max-height</span>: 320px;
+<span class="kw">aspect-ratio</span>: &lt;intrinsic-ratio&gt;;
+<span class="kw">border-radius</span>: 12px;
+<span class="kw">object-fit</span>: cover; <span class="cm">/* center crop */</span></div>
+  </aside>
+</div>
+
+<script>
+(function(){
+  const MIN_H = 140, MAX_H = 320;
+  let state = { ratio: 4/3, label: '4:3', popupW: 311, src: 'flat', load: 'ready', ghost: true, title: true, fade: true, customUrl: null, customType: null };
+
+  const $ = s => document.querySelector(s);
+  const popupWrap = $('#popupWrap'), popupCard = $('#popupCard'), mediaBox = $('#mediaBox'), mediaClip = $('#mediaClip'), ghostLayer = $('#ghostLayer');
+  const rulerH = $('#rulerH'), hTag = $('#hTag'), wTag = $('#wTag');
+  const statusPill = $('#statusPill'), mSrc = $('#mSrc'), mRaw = $('#mRaw'), mFinal = $('#mFinal');
+  const ratioSlider = $('#ratioSlider'), ratioVal = $('#ratioVal');
+  const resetSrc = $('#resetSrc'), uploadLabel = $('#uploadLabel');
+
+  function makeFlatImage(ratio, label){
+    const w = 720, h = Math.round(w / ratio);
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d');
+
+    // Спокойный фон в палитре продукта
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, '#DCE6F8');
+    g.addColorStop(1, '#EEF3FC');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // Лёгкая сетка 48px
+    ctx.strokeStyle = 'rgba(52,64,121,0.08)';
+    ctx.lineWidth = 1;
+    for(let x=48; x<w; x+=48){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+    for(let y=48; y<h; y+=48){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+
+    // Тонкие диагонали
+    ctx.strokeStyle = 'rgba(52,64,121,0.14)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(w,h); ctx.moveTo(w,0); ctx.lineTo(0,h); ctx.stroke();
+
+    // Центральный спокойный бейдж с пропорцией
+    const cx = w/2, cy = h/2;
+    const txt = label || `${ratio.toFixed(2)}:1`;
+    ctx.font = '600 28px "Euclid Circular A", system-ui, sans-serif';
+    const tw = ctx.measureText(txt).width;
+    const pw = tw + 44, ph = 52;
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.beginPath();
+    ctx.roundRect(cx - pw/2, cy - ph/2, pw, ph, 14);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(52,64,121,0.18)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = '#344079';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(txt, cx, cy + 1);
+
+    // Спокойные метки краёв исходника
+    ctx.fillStyle = 'rgba(52,64,121,0.65)';
+    ctx.font = '500 18px "Euclid Circular A", system-ui, sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText('верхний край', cx, 14);
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('нижний край', cx, h - 14);
+
+    ctx.save();
+    ctx.translate(14, cy); ctx.rotate(-Math.PI/2);
+    ctx.textBaseline = 'top';
+    ctx.fillText('левый край', 0, 0);
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(w - 14, cy); ctx.rotate(Math.PI/2);
+    ctx.textBaseline = 'top';
+    ctx.fillText('правый край', 0, 0);
+    ctx.restore();
+
+    return c;
+  }
+
+  function buildMediaNodes(){
+    mediaClip.innerHTML = '';
+    ghostLayer.innerHTML = '';
+
+    if(state.src === 'flat'){
+      const c1 = makeFlatImage(state.ratio, state.label);
+      const c2 = document.createElement('canvas');
+      c2.width = c1.width; c2.height = c1.height;
+      c2.getContext('2d').drawImage(c1, 0, 0);
+      mediaClip.appendChild(c1);
+      ghostLayer.appendChild(c2);
+    } else if(state.src === 'custom' && state.customUrl){
+      const tag = state.customType === 'video' ? 'video' : 'img';
+      const el1 = document.createElement(tag);
+      el1.src = state.customUrl;
+      if(tag === 'video'){ el1.muted = true; el1.loop = true; el1.autoplay = true; el1.playsInline = true; }
+      const el2 = el1.cloneNode();
+      mediaClip.appendChild(el1);
+      ghostLayer.appendChild(el2);
+      if(tag === 'video'){ el1.play().catch(()=>{}); el2.play().catch(()=>{}); }
+    }
+  }
+
+  function updateLayout(){
+    const mediaW = state.popupW - 8; // 4px отступы слева и справа
+    const rawH = mediaW / state.ratio;
+    const finalH = Math.round(Math.max(MIN_H, Math.min(MAX_H, rawH)));
+
+    popupWrap.style.width = state.popupW + 'px';
+    mediaBox.style.height = finalH + 'px';
+    rulerH.style.height = finalH + 'px';
+    wTag.textContent = `width: 100% (${mediaW} px)`;
+    hTag.textContent = `${finalH} px`;
+
+    // Размер «призрака» = какой размер занимает cover-медиа целиком (с учётом обрезанных краёв)
+    const boxRatio = mediaW / finalH;
+    let coverW, coverH;
+    if(state.ratio > boxRatio){
+      // шире контейнера → высота = finalH, обрезаются левый и правый края
+      coverH = finalH;
+      coverW = finalH * state.ratio;
+    } else {
+      // выше контейнера → ширина = mediaW, обрезаются верх и низ
+      coverW = mediaW;
+      coverH = mediaW / state.ratio;
+    }
+    ghostLayer.style.width = Math.round(coverW) + 'px';
+    ghostLayer.style.height = Math.round(coverH) + 'px';
+
+    popupCard.classList.toggle('is-loading', state.load === 'loading');
+    popupCard.classList.toggle('is-error', state.load === 'error');
+    rulerH.style.display = state.load === 'error' ? 'none' : 'flex';
+
+    mediaBox.classList.toggle('show-ghost', state.load === 'ready' && state.ghost && (Math.abs(coverW - mediaW) > 2 || Math.abs(coverH - finalH) > 2));
+    $('#titleWrap').classList.toggle('off', !state.title);
+    $('#fadeOverlay').classList.toggle('off', !state.fade || state.load !== 'ready');
+
+    // Телеметрия
+    const rw = 720, rh = Math.round(rw / state.ratio);
+    mSrc.textContent = `${state.ratio.toFixed(2)}:1 (${rw}×${rh})`;
+    mRaw.textContent = state.load === 'error' ? '—' : `${Math.round(rawH)} px`;
+    mFinal.textContent = state.load === 'error' ? '0 px (скрыто)' : `${finalH} px`;
+    ratioVal.textContent = state.ratio.toFixed(2);
+    ratioSlider.value = Math.max(0.5, Math.min(2.6, state.ratio)).toFixed(2);
+
+    if(state.load === 'loading'){
+      statusPill.className = 'status-pill ok';
+      statusPill.textContent = `Загрузка · зарезервировано ${finalH} px (скелетон без скачка макета)`;
+    } else if(state.load === 'error'){
+      statusPill.className = 'status-pill clamp';
+      statusPill.textContent = 'Ошибка сети · медиа-блок скрыт, попап перешёл в текстовый Scroll=Off';
+    } else if(rawH < MIN_H - 0.5){
+      const cropPct = Math.round((1 - mediaW / coverW) * 100);
+      statusPill.className = 'status-pill clamp';
+      statusPill.textContent = `Упёрлось в min-height: 140 px · кроп по бокам (~${cropPct}%)`;
+    } else if(rawH > MAX_H + 0.5){
+      const cropPct = Math.round((1 - finalH / coverH) * 100);
+      statusPill.className = 'status-pill clamp';
+      statusPill.textContent = `Упёрлось в max-height: 320 px · кроп сверху и снизу (~${cropPct}%)`;
+    } else {
+      statusPill.className = 'status-pill ok';
+      statusPill.textContent = 'В пределах 140–320 px · 1:1 по пропорциям, без обрезки';
+    }
+  }
+
+  // События
+  $('#presets').addEventListener('click', e => {
+    const b = e.target.closest('.preset');
+    if(!b) return;
+    document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.ratio = Number(b.dataset.w) / Number(b.dataset.h);
+    state.label = `${b.dataset.w}:${b.dataset.h}`;
+    if(state.src === 'flat') buildMediaNodes();
+    updateLayout();
+  });
+
+  ratioSlider.addEventListener('input', e => {
+    document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
+    state.ratio = Number(e.target.value);
+    state.label = `${state.ratio.toFixed(2)}:1`;
+    if(state.src === 'flat') buildMediaNodes();
+    updateLayout();
+  });
+
+  resetSrc.addEventListener('click', () => {
+    state.src = 'flat';
+    state.customUrl = null;
+    state.ratio = 4 / 3;
+    state.label = '4:3';
+    resetSrc.style.display = 'none';
+    uploadLabel.textContent = 'Загрузить своё фото или видео';
+    document.querySelectorAll('.preset').forEach(x => x.classList.toggle('active', x.dataset.w === '4' && x.dataset.h === '3'));
+    buildMediaNodes();
+    updateLayout();
+  });
+
+  $('#wSeg').addEventListener('click', e => {
+    const b = e.target.closest('button[data-pw]');
+    if(!b) return;
+    $('#wSeg').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.popupW = Number(b.dataset.pw);
+    updateLayout();
+  });
+
+  $('#loadSeg').addEventListener('click', e => {
+    const b = e.target.closest('button[data-load]');
+    if(!b) return;
+    $('#loadSeg').querySelectorAll('button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.load = b.dataset.load;
+    updateLayout();
+  });
+
+  $('#chkGhost').addEventListener('change', e => { state.ghost = e.target.checked; updateLayout(); });
+  $('#chkTitle').addEventListener('change', e => { state.title = e.target.checked; updateLayout(); });
+  $('#chkFade').addEventListener('change', e => { state.fade = e.target.checked; updateLayout(); });
+
+  $('#fileInput').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const url = URL.createObjectURL(f);
+    state.customUrl = url;
+    state.customType = f.type.startsWith('video') ? 'video' : 'image';
+    state.src = 'custom';
+    resetSrc.style.display = 'block';
+    uploadLabel.textContent = `Файл: ${f.name}`;
+    document.querySelectorAll('.preset').forEach(x => x.classList.remove('active'));
+    if(state.customType === 'image'){
+      const img = new Image();
+      img.onload = () => { state.ratio = img.naturalWidth / img.naturalHeight; buildMediaNodes(); updateLayout(); };
+      img.src = url;
+    } else {
+      const v = document.createElement('video');
+      v.onloadedmetadata = () => { state.ratio = v.videoWidth / v.videoHeight; buildMediaNodes(); updateLayout(); };
+      v.src = url;
+    }
+  });
+
+  buildMediaNodes();
+  updateLayout();
+})();
+</script>
+</body>
+</html>
